@@ -1,0 +1,32 @@
+- Canny Edge Detection
+
+self.image = cv2.imread(filename)
+gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+blurred = cv2.GaussianBlur(gray, (3, 3), 0)
+canny = cv2.Canny(blurred, 20, 40)
+
+- Dilate thicker lines
+
+kernel = np.ones((3,3), np.uint8)
+dilated = cv2.dilate(canny, kernel, iterations=2)
+
+- Contours of joining points
+
+(contours, hierarchy) = cv2.findContours(dilated.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+- Contour approximations (approxPolyDP)
+
+- Square contour approximations
+-- There must be four corners
+-- All four lines must be roughly the same length
+-- All four corners must be roughly 90 degrees
+
+- Remove non-squares
+
+- Cube dimensions and boundries
+-- Figure out:
+--- We are dealing with a 4x4x4 cube
+--- We can find the boundries of the cube
+-- Throw away contours outside boundaries
+
+- Non-square contours

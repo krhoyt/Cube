@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" baseProfile="tiny"
+ xmlns="http://www.w3.org/2000/svg"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ viewBox="0 0 362 272"
+ width="362pt" height="272pt">
+	<defs>
+		<g id="square">
+			<rect fill="black" width="32" height="32" rx="3.5" ry="3.5" x="0" y="0"/>
+			<rect width="26" height="26" rx="2" ry="2" x="3" y="3"/>
+		</g>
+		<g id="row">
+			<use xlink:href="#square" x="0" y="0"/>
+			<use xlink:href="#square" x="30" y="0"/>
+			<use xlink:href="#square" x="60" y="0"/>
+		</g>
+		<g id="side">
+			<use xlink:href="#row" x="0" y="0"/>
+			<use xlink:href="#row" x="0" y="30"/>
+			<use xlink:href="#row" x="0" y="60"/>
+		</g>
+	</defs>
+	<use fill="#009B48" xlink:href="#side" x="0" y="90"/>
+	<use fill="#FFFFFF" xlink:href="#side" x="90" y="0"/>
+	<use fill="#B71234" xlink:href="#side" x="90" y="90"/>
+	<use fill="#FFD500" xlink:href="#side" x="90" y="180"/>
+	<use fill="#0046AD" xlink:href="#side" x="180" y="90"/>
+	<use fill="#FF5800" xlink:href="#side" x="270" y="90"/>
+</svg>

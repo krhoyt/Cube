@@ -1,0 +1,53 @@
+<html>
+<head>
+
+<title>Ordering Points</title>
+
+</head>
+<body>
+
+<script>
+/* 
+  // Desired output
+  {x: 301, y: 188},
+  {x: 382, y: 192},
+  {x: 376, y: 275},
+  {x: 296, y: 270}  
+*/
+
+// Mixed input
+let points = [
+  {x: 382, y: 192},
+  {x: 301, y: 188},  
+  {x: 296, y: 270},
+  {x: 376, y: 275},   
+];
+
+// http://webdevzoom.com/get-center-of-polygon-triangle-and-area-using-javascript-and-php/
+let center = points.reduce( ( reference, point ) => {
+	return {
+    x: reference.x + point.x / points.length, 
+    y: reference.y + point.y / points.length
+  };
+}, {x: 0, y: 0} );
+
+// Center reference point
+console.log( center );
+
+// Sort remainder by distance from top-left
+// https://stackoverflow.com/questions/242404/sort-four-points-in-clockwise-order
+points = points.sort( ( a, b ) => {
+  let tana = Math.atan2( ( a.y - center.y ), ( a.x - center.x ) );
+  let tanb = Math.atan2( ( b.y - center.y ), ( b.x - center.x ) );
+  
+  if( tana < tanb ) return -1;
+  if( tanb < tana ) return 1;
+  return 0;
+} );
+
+// Ordered points
+console.log( points );
+</script>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+body {
+  align-items: center;
+  background-color: #fafafa;  
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 0;
+  padding: 0;  
+}

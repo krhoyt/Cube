@@ -1,0 +1,8 @@
+[
+	{"name": "orange", "red": 201, "green": 85, "blue": 46},
+	{"name": "red", "red": 157, "green": 38, "blue": 44},	
+	{"name": "yellow", "red": 190, "green": 168, "blue": 67},	
+	{"name": "white", "red": 167, "green": 156, "blue": 154},	
+	{"name": "blue", "red": 14, "green": 65, "blue": 110},	
+	{"name": "green", "red": 69, "green": 151, "blue": 66}	
+]
