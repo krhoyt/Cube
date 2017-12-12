@@ -63,12 +63,21 @@ class Cube {
       let x2 = x0 - this.canvas.width * ( 0 - b );
       let y2 = y0 - this.canvas.width * a;
 
-      this.context.beginPath();
-      this.context.moveTo( x1, y1 );
-      this.context.lineWidth = 2;
-      this.context.strokeStyle = 'green';
-      this.context.lineTo( x2, y2 );
-      this.context.stroke();
+      console.log( hough[h][1] * ( 180 / Math.PI ) );
+      let degrees = hough[h][1] * ( 180 / Math.PI );
+
+      if( ( degrees > 87 && degrees < 93 ) ||
+          ( degrees > 177 && degrees < 180 ) || 
+          ( degrees > 0 && degrees < 3 ) ) {
+            this.context.beginPath();
+            this.context.moveTo( x1, y1 );
+            this.context.lineWidth = 2;
+            this.context.strokeStyle = 'green';
+            this.context.lineTo( x2, y2 );
+            this.context.stroke();
+      }
+
+
     }
   }
 
@@ -100,7 +109,7 @@ class Cube {
 }
 
 // Constants
-Cube.IMAGE_SOURCE = 'img/rubiks.cube.jpg';
+Cube.IMAGE_SOURCE = 'img/rounded.cube.jpg';
 
 // Application
 let app = new Cube();
