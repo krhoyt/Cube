@@ -56,7 +56,7 @@ class Cube {
 
     // Hough
     // Image, Rho, Theta, Threshold
-    this.lines = jsfeat.imgproc.hough_transform( image, 1, Math.PI / 180, 100 );
+    this.lines = jsfeat.imgproc.hough_transform( image, 1, Math.PI / 180, 95 );
 
     // Visualize
     this.draw( 'green' );
