@@ -16,7 +16,7 @@ class Cube {
   detect() {
     console.log( 'Detect.' );
 
-    // Shortcuts
+    // Shortcuts 
     let width = this.canvas.width;
     let height = this.canvas.height;
 
@@ -27,34 +27,25 @@ class Cube {
     // [red, green, blue, alpha, ...]
     let raw = this.context.getImageData( 0, 0, width, height );
 
-    // Hold processed image data
-    // Matrix format typically used for image processing
-    // [rgba, rgba, ...]
-    let image = new jsfeat.matrix_t( width, height, jsfeat.U8_t | jsfeat.C1_t );
+    // Apply filter
+    raw = this.gamma( raw );
 
-    // Make grayscale
-    jsfeat.imgproc.grayscale( raw.data, width, height, image, jsfeat.COLOR_RGBA2GRAY );    
-
-    // Render
-    this.render( image, raw );
+    // Put edited pixels back onto canvas
+    this.context.putImageData( raw, 0, 0 );    
   }
 
-  render( source, destination ) {
-    console.log( 'Render.' );
-
-    // From matrix to image data
-    let alpha = ( 0xff << 24 );
-    let data = new Uint32Array( destination.data.buffer );    
-    let i = source.cols * source.rows
-    let value = 0;
-                    
-    while( --i >= 0 ) {
-      value = source.data[i];
-      data[i] = alpha | ( value << 16 ) | ( value << 8 ) | value;
+  // Gamma (contrast) adjustment
+  // Intentionally naive to demonstrate pixel manipulation
+  gamma( image, adjust = 2 ) {
+    // Iterate through the pixels
+    // Adjusting by gamma value along the way
+    for( let p = 0; p < image.data.length; p += 4 ) {    
+      image.data[p] = 255 * Math.pow( image.data[p] / 255, 1 / adjust );
+      image.data[p + 1] = 255 * Math.pow( image.data[p + 1] / 255, 1 / adjust );      
+      image.data[p + 2] = 255 * Math.pow( image.data[p + 2] / 255, 1 / adjust );      
     }
 
-    // Put back on canvas
-    this.context.putImageData( destination, 0, 0 );
+    return image;
   }
 
   // Image loaded
@@ -67,6 +58,7 @@ class Cube {
 }
 
 // Constants
+Cube.GAMMA = 1 / 2;
 Cube.IMAGE_SOURCE = 'img/rubiks.cube.jpg';
 
 // Application
