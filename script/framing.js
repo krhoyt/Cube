@@ -5,9 +5,7 @@ class Cube {
     // References
     this.camera = document.querySelector( 'video' );    
     this.canvas = document.querySelector( 'canvas' );
-    this.canvas.addEventListener( 'click', ( evt ) => {
-      console.log( this.mean );
-    } );
+    this.canvas.addEventListener( 'click', evt => this.doSample( evt ) );
     this.context = this.canvas.getContext( '2d' );
 
     // Sampling areas
@@ -28,7 +26,10 @@ class Cube {
           x: Cube.SAMPLING_SIZE + ( r * ( Cube.SAMPLING_SIZE + Cube.SAMPLING_SPACE ) ) + Math.round( offset_x ),
           y: Cube.SAMPLING_SIZE + ( c * ( Cube.SAMPLING_SIZE + Cube.SAMPLING_SPACE ) ) + Math.round( offset_y ),
           width: Cube.SAMPLING_SIZE,
-          height: Cube.SAMPLING_SIZE
+          height: Cube.SAMPLING_SIZE,
+          red: 0,
+          green: 0,
+          blue: 0
         } );
       }    
     }
@@ -37,11 +38,6 @@ class Cube {
     fetch( '/data/traditional.json' )
       .then( ( results ) => { return results.json() } )
       .then( ( data ) => {
-        // Convert to XYZ color space
-        for( let c = 0; c < data.length; c++ ) {
-          rgb2lab( data[c] );
-        }
-
         // Store colors
         // Get camera
         this.colors = data.slice( 0 );
@@ -74,7 +70,6 @@ class Cube {
     // Look through swatch areas
     for( let s = 0; s < this.swatches.length; s++ ) {
       let mean = {
-        count: 0,
         red: 0,
         green: 0,
         blue: 0
@@ -90,25 +85,20 @@ class Cube {
       }
 
       // Average a single RGB value for the entire swatch
-      mean.red = Math.round( mean.red / ( this.swatches[s].width * this.swatches[s].height ) );
-      mean.green = Math.round( mean.green / ( this.swatches[s].width * this.swatches[s].height ) );
-      mean.blue = Math.round( mean.blue / ( this.swatches[s].width * this.swatches[s].height ) );            
-      
-      // Look for a color match
-      for( let c = 0; c < this.colors.length; c++ ) {
-        // Get LAB value of RGB average
-        // Measure the color distance
-        this.mean = rgb2lab( mean );
-        let distance = deltaE( this.colors[c], this.mean );        
+      this.swatches[s].red = Math.round( mean.red / ( this.swatches[s].width * this.swatches[s].height ) );
+      this.swatches[s].green = Math.round( mean.green / ( this.swatches[s].width * this.swatches[s].height ) );
+      this.swatches[s].blue = Math.round( mean.blue / ( this.swatches[s].width * this.swatches[s].height ) );            
 
-        // Match
-        if( distance < 0.70 ) {
-          console.log( this.colors[c].short );
-        }
-      }
-
+      // Draw averaged colors on screen
       this.context.strokeStyle = 'green';
-      this.context.fillStyle = 'rgb( ' + mean.red + ', ' + mean.green + ', ' + mean.blue + ' )';
+      this.context.fillStyle = 
+        'rgb( ' + 
+        this.swatches[s].red + 
+        ', ' + 
+        this.swatches[s].green + 
+        ', ' + 
+        this.swatches[s].blue + 
+        ' )';
       this.context.fillRect( 
         this.swatches[s].x,
         this.swatches[s].y,
@@ -129,9 +119,76 @@ class Cube {
     // Continuous analysis
     requestAnimationFrame( () => { return this.detect(); } );    
   }
+
+  rgb2hsb( red, green, blue ) {
+    let minimum =  Math.min( red, green, blue );
+    let maximum = Math.max( red, green, blue );
+    let delta = maximum - minimum;
+    let hue = maximum;
+    let saturation = maximum;
+    let brightness = maximum;
+
+    brightness = Math.floor( maximum / 255 * 100 );
+    
+    if( maximum != 0 ) {
+      saturation = Math.floor( delta / maximum * 100 );
+    } else {
+      hue = 0;
+      saturation = 0;
+      brightness = 0;
+    }
+
+    if( red == maximum ) {
+      hue = ( green - blue ) / delta;
+    } else if( green == maximum ) {
+      hue = 2 + ( blue - red ) / delta;
+    } else {
+      hue = 4 + ( red - green ) / delta;
+    }
+      
+    hue = Math.floor( hue * 60 );
+    
+    if( hue < 0 ) {
+      hue += 360;
+    } 
+
+    return {
+      hue: hue,
+      saturation: saturation,
+      brightness: brightness
+    };
+  }
+
+  doSample( evt ) {
+    let face = '';
+
+    console.log( this.swatches );
+
+    for( let s = 0; s < this.swatches.length; s++ ) {
+      let hsb = this.rgb2hsb( 
+        this.swatches[s].red,
+        this.swatches[s].green,
+        this.swatches[s].blue 
+      );
+
+      console.log( hsb );
+
+      for( let c = 0; c < this.colors.length; c++ ) {
+        if( 
+          ( hsb.hue > ( this.colors[c].hue - Cube.COLOR_VARIANCE ) ) && ( hsb.hue < ( this.colors[c].hue + Cube.COLOR_VARIANCE ) )
+        ) {
+          face = face + this.colors[c].short;
+          break;
+        }
+      }
+    }
+
+    console.log( face );
+  }
 }
 
 // Constants
+Cube.COLOR_VARIANCE = 20;
 Cube.SAMPLING_SIZE = 25;
 Cube.SAMPLING_SPACE = 60;
 
