@@ -69,35 +69,48 @@ class Cube {
 
     // Look through swatch areas
     for( let s = 0; s < this.swatches.length; s++ ) {
-      let mean = {
-        red: 0,
-        green: 0,
-        blue: 0
-      };
+      let closest = null;
 
-      // Sum the RGB values for the related pixels
+      // Get the color distances for each pixel in the swatch
       for( let y = this.swatches[s].y; y < this.swatches[s].y + this.swatches[s].height; y++ ) {
         for( let x = this.swatches[s].x; x < this.swatches[s].x + this.swatches[s].width; x++ ) {
-          mean.red = mean.red + raw.data[( y * width * 4 ) + ( x * 4 )];
-          mean.green = mean.green + raw.data[( y * width * 4 ) + ( x * 4 ) + 1];
-          mean.blue = mean.blue + raw.data[( y * width * 4 ) + ( x * 4 ) + 2];                    
+          let lab = rgb2lab( {
+            red: raw.data[( y * width * 4 ) + ( x * 4 )],            
+            green: raw.data[( y * width * 4 ) + ( x * 4 ) + 1],
+            blue: raw.data[( y * width * 4 ) + ( x * 4 ) + 2]
+          } );      
+
+          for( let c = 0; c < this.colors.length; c++ ) {
+            let distance = deltaE( this.colors[c], lab );
+
+            if( closest == null ) {
+              closest = {
+                distance: distance,
+                color: this.colors[c],
+                source: lab
+              };
+            } else {
+              if( closest.distance > distance ) {
+                closest.distance = distance;
+                closest.color = this.colors[c];
+                closest.source = lab;
+              }
+            }
+          }
         }
       }
 
-      // Average a single RGB value for the entire swatch
-      this.swatches[s].red = Math.round( mean.red / ( this.swatches[s].width * this.swatches[s].height ) );
-      this.swatches[s].green = Math.round( mean.green / ( this.swatches[s].width * this.swatches[s].height ) );
-      this.swatches[s].blue = Math.round( mean.blue / ( this.swatches[s].width * this.swatches[s].height ) );            
+      this.swatches[s].closest = closest;
 
       // Draw averaged colors on screen
       this.context.strokeStyle = 'green';
       this.context.fillStyle = 
         'rgb( ' + 
-        this.swatches[s].red + 
+        closest.color.red + 
         ', ' + 
-        this.swatches[s].green + 
+        closest.color.green + 
         ', ' + 
-        this.swatches[s].blue + 
+        closest.color.blue + 
         ' )';
       this.context.fillRect( 
         this.swatches[s].x,
@@ -120,67 +133,11 @@ class Cube {
     requestAnimationFrame( () => { return this.detect(); } );    
   }
 
-  rgb2hsb( red, green, blue ) {
-    let minimum =  Math.min( red, green, blue );
-    let maximum = Math.max( red, green, blue );
-    let delta = maximum - minimum;
-    let hue = maximum;
-    let saturation = maximum;
-    let brightness = maximum;
-
-    brightness = Math.floor( maximum / 255 * 100 );
-    
-    if( maximum != 0 ) {
-      saturation = Math.floor( delta / maximum * 100 );
-    } else {
-      hue = 0;
-      saturation = 0;
-      brightness = 0;
-    }
-
-    if( red == maximum ) {
-      hue = ( green - blue ) / delta;
-    } else if( green == maximum ) {
-      hue = 2 + ( blue - red ) / delta;
-    } else {
-      hue = 4 + ( red - green ) / delta;
-    }
-      
-    hue = Math.floor( hue * 60 );
-    
-    if( hue < 0 ) {
-      hue += 360;
-    } 
-
-    return {
-      hue: hue,
-      saturation: saturation,
-      brightness: brightness
-    };
-  }
-
   doSample( evt ) {
     let face = '';
 
-    console.log( this.swatches );
-
     for( let s = 0; s < this.swatches.length; s++ ) {
-      let hsb = this.rgb2hsb( 
-        this.swatches[s].red,
-        this.swatches[s].green,
-        this.swatches[s].blue 
-      );
-
-      console.log( hsb );
-
-      for( let c = 0; c < this.colors.length; c++ ) {
-        if( 
-          ( hsb.hue > ( this.colors[c].hue - Cube.COLOR_VARIANCE ) ) && ( hsb.hue < ( this.colors[c].hue + Cube.COLOR_VARIANCE ) )
-        ) {
-          face = face + this.colors[c].short;
-          break;
-        }
-      }
+      face = face + this.swatches[s].closest.color.short;
     }
 
     console.log( face );
@@ -188,7 +145,6 @@ class Cube {
 }
 
 // Constants
-Cube.COLOR_VARIANCE = 20;
 Cube.SAMPLING_SIZE = 25;
 Cube.SAMPLING_SPACE = 60;
 
