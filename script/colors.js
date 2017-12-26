@@ -3,20 +3,53 @@ class Cube {
     // References
     this.camera = document.querySelector( 'video' );    
     this.canvas = document.querySelector( 'canvas' );
+    this.canvas.addEventListener( 'click', evt => this.doSample( evt ) );
     this.context = this.canvas.getContext( '2d' );
 
-    // Access web camera
-    // Start detection
-    navigator.mediaDevices.getUserMedia( {audio: false, video: true} )
-      .then( ( stream ) => {
+    // Sampling areas
+    this.swatches = [];
+    
+    // Color comparisons
+    this.colors = [];
+
+    // Center vertically and horizontally
+    let offset_x = ( this.canvas.width - ( ( Cube.SAMPLING_SIZE * 5 ) + ( Cube.SAMPLING_SPACE * 2 ) ) ) / 2;
+    let offset_y = ( this.canvas.height - ( ( Cube.SAMPLING_SIZE * 5 ) + ( Cube.SAMPLING_SPACE * 2 ) ) ) / 2;
+
+    // Build sampling swatches
+    for( let r = 0; r < 3; r++ ) {
+      for( let c = 0; c < 3; c++ ) {
+        // |-- 25 --[ 25 ]-- 60 --[ 25 ]-- 60 --[ 25 ] -- 25 --|
+        this.swatches.push( {
+          x: Cube.SAMPLING_SIZE + ( c * ( Cube.SAMPLING_SIZE + Cube.SAMPLING_SPACE ) ) + Math.round( offset_x ),
+          y: Cube.SAMPLING_SIZE + ( r * ( Cube.SAMPLING_SIZE + Cube.SAMPLING_SPACE ) ) + Math.round( offset_y ),
+          width: Cube.SAMPLING_SIZE,
+          height: Cube.SAMPLING_SIZE,
+          red: 0,
+          green: 0,
+          blue: 0
+        } );
+      }    
+    }
+
+    // Get color reference
+    fetch( '/data/traditional.json' )
+      .then( ( results ) => { return results.json() } )
+      .then( ( data ) => {
+        // Store colors
+        // Get camera
+        this.colors = data.slice( 0 );
+        return navigator.mediaDevices.getUserMedia( {audio: false, video: true} );
+      } ).then( ( stream ) => {
+        // Use camera as video stream
         this.camera.srcObject = stream;
         this.camera.onloadedmetadata = function( evt ) {
+          // Play stream
+          // Start analysis
           this.camera.play();
           this.detect();
         }.bind( this );
-      } ).catch( ( error ) => {
-        console.log( error );
-      } );
+      } );    
   }
 
   // Image processing
@@ -32,91 +65,86 @@ class Cube {
     // [red, green, blue, alpha, ...]
     let raw = this.context.getImageData( 0, 0, width, height );
 
-    // Look through the pixels
-    for( let p = 0; p < raw.data.length; p += 4 ) {
-      // Convert RGB to HSB
-      let hsb = this.rgb2hsb( raw.data[p], raw.data[p + 1], raw.data[p + 2] );
+    // Look through swatch areas
+    for( let s = 0; s < this.swatches.length; s++ ) {
+      let closest = null;
 
-      // Check hue in range
-      // Make black if in range
-      if( hsb.hue >= 230 && hsb.hue <= 250 ) {
-        raw.data[p] = 0;
-        raw.data[p + 1] = 0;
-        raw.data[p + 2] = 0;        
+      // Get the color distances for each pixel in the swatch
+      for( let y = this.swatches[s].y; y < this.swatches[s].y + this.swatches[s].height; y++ ) {
+        for( let x = this.swatches[s].x; x < this.swatches[s].x + this.swatches[s].width; x++ ) {
+          let lab = rgb2lab( {
+            red: raw.data[( y * width * 4 ) + ( x * 4 )],            
+            green: raw.data[( y * width * 4 ) + ( x * 4 ) + 1],
+            blue: raw.data[( y * width * 4 ) + ( x * 4 ) + 2]
+          } );      
+
+          for( let c = 0; c < this.colors.length; c++ ) {
+            let distance = deltaE( this.colors[c], lab );
+
+            if( closest == null ) {
+              closest = {
+                distance: distance,
+                color: this.colors[c],
+                source: lab
+              };
+            } else {
+              if( closest.distance > distance ) {
+                closest.distance = distance;
+                closest.color = this.colors[c];
+                closest.source = lab;
+              }
+            }
+          }
+        }
       }
 
-      /*
-      // Check blue in range
-      // Make black if in range
-      if( raw.data[p + 2] >= 230 && raw.data[p + 2] <= 255 ) {
-        raw.data[p] = 0;
-        raw.data[p + 1] = 0;
-        raw.data[p + 2] = 0;
-      }
-      */
+      this.swatches[s].closest = closest;
+
+      // Draw averaged colors on screen
+      this.context.strokeStyle = 'green';
+      this.context.fillStyle = 
+        'rgb( ' + 
+        closest.color.red + 
+        ', ' + 
+        closest.color.green + 
+        ', ' + 
+        closest.color.blue + 
+        ' )';
+      this.context.fillRect( 
+        this.swatches[s].x,
+        this.swatches[s].y,
+        this.swatches[s].width,
+        this.swatches[s].height
+      );
+      this.context.beginPath();
+      this.context.rect(
+        this.swatches[s].x,
+        this.swatches[s].y,
+        this.swatches[s].width,
+        this.swatches[s].height
+      );
+      this.context.closePath();
+      this.context.stroke();
     }
-
-    // Put edited pixels back onto canvas
-    this.context.putImageData( raw, 0, 0 );
 
     // Continuous analysis
     requestAnimationFrame( () => { return this.detect(); } );    
   }
 
-  // Convert RGB to HSB
-  // https://stackoverflow.com/questions/2348597/why-doesnt-this-javascript-rgb-to-hsl-code-work
-  rgb2hsb( red, green, blue ) {
-    red /= 255; 
-    green /= 255; 
-    blue /= 255;
+  doSample( evt ) {
+    let face = '';
 
-    let minimum = Math.min( red, green, blue );
-    let maximum = Math.max( red, green, blue );
-    let delta = maximum - minimum;
-    let hsb = {
-      hue: 0, 
-      saturation: 0, 
-      brightness: maximum
-    };
-
-    if( delta !== 0 ) {
-      hsb.saturation = delta / maximum;
-      let dred = ( ( ( maximum - red ) / 6 ) + ( delta / 2 ) ) / delta;
-      let dgreen = ( ( ( maximum - green ) / 6 ) + ( delta / 2 ) ) / delta;
-      let dblue = ( ( ( maximum - blue ) / 6 ) + ( delta / 2 ) ) / delta;
-
-      if( red === maximum ) {
-        hsb.hue = dblue - dgreen;
-      } else if( green === maximum ) {
-        hsb.hue = ( 1 / 3 ) + dred - dblue;
-      } else if( blue === maximum ) {
-        hsb.hue = ( 2 / 3 ) + dgreen - dred;
-      }
-
-      if( hsb.hue < 0 ) {
-        hsb.hue += 1;
-      }
-
-      if( hsb.hue > 1 ) {
-        hsb.hue -= 1;
-      }
+    for( let s = 0; s < this.swatches.length; s++ ) {
+      face = face + this.swatches[s].closest.color.short;
     }
 
-    hsb.hue *= 360;
-    hsb.saturation *= 100;
-    hsb.brightness *= 100;
-
-    return hsb;    
+    console.log( face );
   }
 }
 
 // Constants
-Cube.ANGLE_VARIATION = 20;
-Cube.IMAGE_VARIATION = 0.25;
-Cube.MEDIAN_MINIMUM = 0.50;
-Cube.MEDIAN_MAXIMUM = 2;
-Cube.ROTATION_VARIATION = 10;
-Cube.SIDE_VARIATION = 0.60;
+Cube.SAMPLING_SIZE = 25;
+Cube.SAMPLING_SPACE = 60;
 
 // Application
 let app = new Cube();

@@ -1,6 +1,16 @@
-class Cube {
+class Cubed {
   constructor() {
-    this.mean = null;
+    // Pre-build solve tables
+    Cube.initSolver( '/lib/cubejs/worker.js' );
+
+    // Current cube state
+    // 0 - Front
+    // 1 - Right
+    // 2 - Back
+    // 3 - Left
+    // 4 - Up
+    // 5 - Down
+    this.state = [];
 
     // References
     this.camera = document.querySelector( 'video' );    
@@ -15,18 +25,18 @@ class Cube {
     this.colors = [];
 
     // Center vertically and horizontally
-    let offset_x = ( this.canvas.width - ( ( Cube.SAMPLING_SIZE * 5 ) + ( Cube.SAMPLING_SPACE * 2 ) ) ) / 2;
-    let offset_y = ( this.canvas.height - ( ( Cube.SAMPLING_SIZE * 5 ) + ( Cube.SAMPLING_SPACE * 2 ) ) ) / 2;
+    let offset_x = ( this.canvas.width - ( ( Cubed.SAMPLING_SIZE * 5 ) + ( Cubed.SAMPLING_SPACE * 2 ) ) ) / 2;
+    let offset_y = ( this.canvas.height - ( ( Cubed.SAMPLING_SIZE * 5 ) + ( Cubed.SAMPLING_SPACE * 2 ) ) ) / 2;
 
     // Build sampling swatches
     for( let r = 0; r < 3; r++ ) {
       for( let c = 0; c < 3; c++ ) {
         // |-- 25 --[ 25 ]-- 60 --[ 25 ]-- 60 --[ 25 ] -- 25 --|
         this.swatches.push( {
-          x: Cube.SAMPLING_SIZE + ( r * ( Cube.SAMPLING_SIZE + Cube.SAMPLING_SPACE ) ) + Math.round( offset_x ),
-          y: Cube.SAMPLING_SIZE + ( c * ( Cube.SAMPLING_SIZE + Cube.SAMPLING_SPACE ) ) + Math.round( offset_y ),
-          width: Cube.SAMPLING_SIZE,
-          height: Cube.SAMPLING_SIZE,
+          x: Cubed.SAMPLING_SIZE + ( c * ( Cubed.SAMPLING_SIZE + Cubed.SAMPLING_SPACE ) ) + Math.round( offset_x ),
+          y: Cubed.SAMPLING_SIZE + ( r * ( Cubed.SAMPLING_SIZE + Cubed.SAMPLING_SPACE ) ) + Math.round( offset_y ),
+          width: Cubed.SAMPLING_SIZE,
+          height: Cubed.SAMPLING_SIZE,
           red: 0,
           green: 0,
           blue: 0
@@ -137,16 +147,29 @@ class Cube {
     let face = '';
 
     for( let s = 0; s < this.swatches.length; s++ ) {
-      face = face + this.swatches[s].closest.color.short;
+      face = face + this.swatches[s].closest.color.face;
     }
 
     console.log( face );
+
+    this.state.push( face );
+
+    if( this.state.length == 6 ) {
+      console.log( this.state[4] + this.state[1] + this.state[0] + this.state[5] + this.state[3] + this.state[2] );
+      /*
+      let shuffle = Cube.fromString(
+        this.state[4] + this.state[1] + this.state[0] + this.state[5] + this.state[3] + this.state[2]
+      );  
+      let algorithm = shuffle.solve();
+      console.log( algorithm );
+      */
+    }
   }
 }
 
 // Constants
-Cube.SAMPLING_SIZE = 25;
-Cube.SAMPLING_SPACE = 60;
+Cubed.SAMPLING_SIZE = 25;
+Cubed.SAMPLING_SPACE = 60;
 
 // Application
-let app = new Cube();
+let app = new Cubed();

@@ -2,6 +2,7 @@
 	{
     "name": "orange", 
     "short": "O", 
+    "face": "L",
     "red": 255, 
     "green": 88, 
     "blue": 0,
@@ -14,6 +15,7 @@
   }, {
     "name": "red", 
     "short": "R", 
+    "face": "R",
     "red": 183, 
     "green": 18, 
     "blue": 52,
@@ -26,6 +28,7 @@
   }, {
     "name": "yellow", 
     "short": "Y", 
+    "face": "D",
     "red": 255,
     "green": 213, 
     "blue": 0,
@@ -38,6 +41,7 @@
   }, {
     "name": "white", 
     "short": "W", 
+    "face": "U",
     "red": 255, 
     "green": 255, 
     "blue": 255,
@@ -50,6 +54,7 @@
   }, {
     "name": "blue", 
     "short": "B", 
+    "face": "B",
     "red": 0, 
     "green": 70, 
     "blue": 173,
@@ -62,6 +67,7 @@
   }, {
     "name": "green", 
     "short": "G", 
+    "face": "F",
     "red": 0, 
     "green": 155, 
     "blue": 72,
