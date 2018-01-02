@@ -133,7 +133,7 @@ class Cube {
   }
 }
 
-Cube.COLORS = 'data/pastel.json';
+Cube.COLORS = '../data/pastel.json';
 Cube.DIMENSION_MINIMUM = 40;
 Cube.MEDIAN_MINIMUM = 0.50;
 Cube.MEDIAN_MAXIMUM = 2;
