@@ -12,23 +12,27 @@ video {
   display: none;
 }
 
-#capture {
+#camera {
   position: relative;
 }
 
-#capture > canvas {
+#camera > canvas {
   position: absolute;
 }
 
-#capture > svg {
+#camera > svg {
   position: absolute;
+}
+
+.template {
+  display: none;
 }
 </style>
 
 </head>
 <body>
 
-<div id="capture">
+<div id="camera">
 
   <!-- Rendering surface -->
   <canvas width="640" height="480"></canvas>
@@ -67,188 +71,92 @@ video {
 
 </div>
 
-<!-- Facelets -->
-<!-- Green -->
-<svg width="93" height="93">
-  <!-- Row -->
-  <rect width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>  
-  <rect x="62" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>
-
-  <!-- Row -->
-  <rect y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="32" width="27" height="27" rx="2" fill="green"></rect>  
-  <rect x="62" y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>    
-
-  <!-- Row -->
-  <rect y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>  
-  <rect x="62" y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>      
-</svg>
-
-<!-- Red -->
-<svg width="93" height="93">
-  <!-- Row -->
-  <rect width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>  
-  <rect x="62" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>
-
-  <!-- Row -->
-  <rect y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="32" width="27" height="27" rx="2" fill="red"></rect>  
-  <rect x="62" y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>    
-
-  <!-- Row -->
-  <rect y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>  
-  <rect x="62" y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>      
-</svg>
-
-<!-- Blue -->
-<svg width="93" height="93">
-  <!-- Row -->
-  <rect width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>  
-  <rect x="62" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>
-
-  <!-- Row -->
-  <rect y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="32" width="27" height="27" rx="2" fill="blue"></rect>  
-  <rect x="62" y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>    
-
-  <!-- Row -->
-  <rect y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>  
-  <rect x="62" y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>      
-</svg>
-
-<!-- Orange -->
-<svg width="93" height="93">
-  <!-- Row -->
-  <rect width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>  
-  <rect x="62" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>
-
-  <!-- Row -->
-  <rect y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="32" width="27" height="27" rx="2" fill="orange"></rect>  
-  <rect x="62" y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>    
-
-  <!-- Row -->
-  <rect y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>  
-  <rect x="62" y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>      
-</svg>
-
-<!-- White -->
-<svg width="93" height="93">
-  <!-- Row -->
-  <rect width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>  
-  <rect x="62" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>
-
-  <!-- Row -->
-  <rect y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="32" width="27" height="27" rx="2" fill="white"></rect>  
-  <rect x="62" y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>    
-
-  <!-- Row -->
-  <rect y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>  
-  <rect x="62" y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>      
-</svg>
-
-<!-- Yellow -->
-<svg width="93" height="93">
-  <!-- Row -->
-  <rect width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>  
-  <rect x="62" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>
-
-  <!-- Row -->
-  <rect y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="32" width="27" height="27" rx="2" fill="yellow"></rect>  
-  <rect x="62" y="30" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>    
-
-  <!-- Row -->
-  <rect y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="2" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="33" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>  
-  <rect x="62" y="60" width="31" height="31" rx="4"></rect> 
-  <rect x="64" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>      
-</svg>
-
 <!-- Web camera -->
 <!-- Not visible -->
 <video width="640" height="480"></video>
 
+<!-- Face template -->
+<svg class="face template" width="93" height="93">
+  <!-- Row -->
+  <rect width="31" height="31" rx="4"></rect> 
+  <rect class="cubies" x="2" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>
+  <rect x="31" width="31" height="31" rx="4"></rect> 
+  <rect class="cubies" x="33" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>  
+  <rect x="62" width="31" height="31" rx="4"></rect> 
+  <rect class="cubies" x="64" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>
+
+  <!-- Row -->
+  <rect y="30" width="31" height="31" rx="4"></rect> 
+  <rect class="cubies" x="2" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>
+  <rect x="31" y="30" width="31" height="31" rx="4"></rect> 
+  <rect class="side" x="33" y="32" width="27" height="27" rx="2" fill="green"></rect>  
+  <rect x="62" y="30" width="31" height="31" rx="4"></rect> 
+  <rect class="cubies" x="64" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>    
+
+  <!-- Row -->
+  <rect y="60" width="31" height="31" rx="4"></rect> 
+  <rect class="cubies" x="2" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>
+  <rect x="31" y="60" width="31" height="31" rx="4"></rect> 
+  <rect class="cubies" x="33" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>  
+  <rect x="62" y="60" width="31" height="31" rx="4"></rect> 
+  <rect class="cubies" x="64" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>      
+</svg>
+
 <script>
-class Solver {
+class Face {
+  constructor( target, color = 'green' ) {
+    this.pallete = {
+      R: 'red', G: 'green', B: 'blue', W: 'white', O: 'orange', Y: 'yellow',
+      yellow: 'Y', orange: 'O', white: 'W', blue: 'B', green: 'G', red: 'R'
+    };
+
+    let template = document.querySelector( '.face.template' );
+
+    this.root = template.cloneNode( true );
+    this.root.classList.remove( 'template' );
+    target.appendChild( this.root );
+
+    this.side = this.root.querySelector( '.side' );
+    this.side.setAttributeNS( null, 'fill', color );
+
+    this.cubies = this.root.querySelectorAll( '.cubies' );
+  }
+
+  set colors( value ) {
+    value = value.toUpperCase();
+
+    for( let c = 0; c < this.cubies.length; c++ ) {
+      this.cubies[c].setAttributeNS( null, 'fill', this.pallete[value.charAt( c )] );
+    }
+  }
+
+  get colors() {
+    let result = '';
+
+    for( let c = 0; c < this.cubies.length; c++ ) {
+      if( c == 4 ) {
+        result = result + this.pallete[this.side.getAttributeNS( null, 'fill' )];
+      }
+
+      result = result + this.pallete[this.cubies[c].getAttributeNS( null, 'fill' )];
+    }
+
+    return result;
+  }
+}
+
+class Camera {
   constructor() {
-    // Canvas
-    this.canvas = document.querySelector( 'canvas' );
+    this.root = document.querySelector( '#camera' );
+    
+    this.canvas = this.root.querySelector( 'canvas' );
     this.context = this.canvas.getContext( '2d' );
 
-    // Masking
-    this.mode = document.querySelector( 'svg > rect' );
-    
-    // Video
+    this.mode = this.root.querySelector( 'svg > rect' );
+
     this.video = document.querySelector( 'video' );
-    
+
     /*
-    // Load web camera
     navigator.mediaDevices.getUserMedia( {audio: false, video: true} )
       .then( ( stream ) => {
         // Set video to web camera
@@ -268,13 +176,25 @@ class Solver {
     */
   }
 
-  // Render video feed to canvas
   render() {
-    // Video to canvas
     this.context.drawImage( this.video, 0, 0 );
-
-    // Continuously render
     requestAnimationFrame( () => { return this.render(); } );        
+  }  
+}
+
+class Solver {
+  constructor() {
+    this.camera = new Camera();
+    this.faces = [
+      new Face( document.body, 'green' ),
+      new Face( document.body, 'red' ),
+      new Face( document.body, 'blue' ),
+      new Face( document.body, 'orange' ),
+      new Face( document.body, 'white' ),
+      new Face( document.body, 'yellow' )
+    ];
+    this.faces[0].colors = 'ROYGBWRO';
+    console.log( this.faces[0].colors );
   }
 }
 
