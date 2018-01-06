@@ -89,7 +89,7 @@ video {
   <rect y="30" width="31" height="31" rx="4"></rect> 
   <rect class="cubies" x="2" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>
   <rect x="31" y="30" width="31" height="31" rx="4"></rect> 
-  <rect class="side" x="33" y="32" width="27" height="27" rx="2" fill="green"></rect>  
+  <rect class="side cubies" x="33" y="32" width="27" height="27" rx="2" fill="green"></rect>  
   <rect x="62" y="30" width="31" height="31" rx="4"></rect> 
   <rect class="cubies" x="64" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>    
 
@@ -102,22 +102,25 @@ video {
   <rect class="cubies" x="64" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>      
 </svg>
 
+<!-- ThreeJS -->
 <script src="../lib/mrdoob/three.js"></script>
 <script src="../lib/mrdoob/OrbitControls.js"></script>
+
+<!-- TweenMax -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/TweenMax.min.js"></script>
 
 <script>
 class Cube {
   constructor( interactive = true ) {
     this.cubies = [];
-    this.palette = [0x008000, 0xff0000, 0x0000ff, 0xffa500, 0xffffff, 0xffff00];
+    this.side = 0;
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color( 0xf5f5f5 );    
     
     this.camera = new THREE.PerspectiveCamera( 75, Cube.WIDTH / Cube.HEIGHT, 0.1, 1000 );
-    this.camera.position.z = 3;    
-    this.camera.position.x = 2.5;    
-    this.camera.position.y = 2.25;        
+    this.camera.position.z = 3.75;    
+    // this.camera.position.y = 2;        
     this.camera.lookAt( new THREE.Vector3( 0, 0, 0 ) );        
 
     this.renderer = new THREE.WebGLRenderer( {antialias: true} );
@@ -141,109 +144,211 @@ class Cube {
     this.scene.add( this.pivot );
 
     // Build and rotate sides
-    for( let s = 0; s < this.palette.length; s++ ) {
-      this.build( this.palette[s] );
+    // Move by association with tertiary object
+    for( let side in Palette.sides ) {
+      // Side
+      this.build( Palette.sides[side].hex );
 
+      // Center 
       this.pivot.rotation.set( 0, 0, 0 );
       this.pivot.updateMatrixWorld();
 
+      // Move from scene to center
       for( let c = 0; c < 9; c++ ) {
-        this.cubies[( s * 9 ) + c].updateMatrixWorld();
-        THREE.SceneUtils.attach( this.cubies[( s * 9 ) + c], this.scene, this.pivot );        
+        this.cubies[( this.side * 9 ) + c].updateMatrixWorld();
+        THREE.SceneUtils.attach( this.cubies[( this.side * 9 ) + c], this.scene, this.pivot );        
       }
 
-      if( s < 4 ) {
-        this.pivot.rotation.y = THREE.Math.degToRad( s * 90 );
-      } else if( s == 4 ) {
+      // Rotate center
+      // Place side in basic orientation
+      if( this.side < 4 ) {
+        this.pivot.rotation.y = THREE.Math.degToRad( this.side * 90 );
+      } else if( this.side == 4 ) {
         this.pivot.rotation.x = THREE.Math.degToRad( -90 );        
-      } else if( s == 5 ) {
+      } else if( this.side == 5 ) {
         this.pivot.rotation.x = THREE.Math.degToRad( 90 );                
       }
 
+      // Update matrix
       this.pivot.updateMatrixWorld();      
 
+      // Move from center to scene
       for( let c = 0; c < 9; c++ ) {
-        THREE.SceneUtils.detach( this.cubies[( s * 9 ) + c], this.pivot, this.scene );        
+        THREE.SceneUtils.detach( this.cubies[( this.side * 9 ) + c], this.pivot, this.scene );        
       }      
+
+      this.side = this.side + 1;
     }
 
-    /*
-    // This works
-    this.cubies[13].updateMatrixWorld();
-    THREE.SceneUtils.attach( this.cubies[13], this.scene, this.pivot );
+    this.side = 0;
 
-    this.pivot.rotation.y = THREE.Math.degToRad( 90 );
-    this.pivot.updateMatrixWorld();
-
-    THREE.SceneUtils.detach( this.cubies[13], this.pivot, this.scene );
-    */
+    console.log( this.cubies[0].position );
+    console.log( this.cubies[9].position );    
 
     this.render();
   }
 
   build( color = 0x00ff00 ) {    
-    for( let y = 0; y < 3; y++ ) {
-      for( let x = 0; x < 3; x++ ) {
+    for( let y = 1; y > -2; y-- ) {
+      for( let x = -1; x < 2; x++ ) {
         let cubie = new THREE.Mesh( 
-          new THREE.BoxGeometry( 1, 1, 1 ),
+          new THREE.BoxGeometry( 
+            Cube.CUBIE_DIMENSIONS, 
+            Cube.CUBIE_DIMENSIONS, 
+            Cube.CUBIE_DIMENSIONS 
+          ),
           new THREE.MeshBasicMaterial( {
-            color: 0x000000
+            color: Palette.background
         } ) );
         let sticker = new THREE.Mesh( 
-          new THREE.BoxGeometry( 0.90, 0.90, 0.90 ),
+          new THREE.BoxGeometry( 
+            Cube.STICKER_DIMENSIONS, 
+            Cube.STICKER_DIMENSIONS, 
+            Cube.STICKER_DIMENSIONS 
+          ),
           new THREE.MeshBasicMaterial( {
-            color: ( x == 1 && y == 1 ) ? color : 0xd3d3d3
+            color: ( x == 0 && y == 0 ) ? color : Palette.nuetral
         } ) );        
         sticker.position.set( 0, 0, 0.1 );
 
-        let group = new THREE.Group();        
+        let group = new THREE.Group();  
         group.add( cubie );
         group.add( sticker );
 
         this.cubies.push( group );
-        this.cubies[this.cubies.length - 1].position.set( x - 1, y - 1, 1 );        
+        this.cubies[this.cubies.length - 1].position.set( x, y, 1 );        
 
         this.scene.add( this.cubies[this.cubies.length - 1] );        
       }
     }
   }
 
+  set all( value ) {
+    value = value.toUpperCase();
+
+    for( let c = 0; c < this.cubies.length; c++ ) {
+      this.cubies[c].children[1].material.color.setHex( Palette.sides[value.charAt( c )].hex );
+    }    
+  }
+
+  get all() {
+    let result = '';
+
+    for( let c = 0; c < this.cubies.length; c++ ) {
+      for( let side in Palette.sides ) {
+        if( Palette.sides[side].hex == this.cubies[( this.side * 9 ) + c].children[1].material.color.getHex() ) {
+          result = result + Palette.sides[side].short;
+          break;
+        }
+      }
+    }
+
+    return result;    
+  }
+
+  set colors( value ) {
+    value = value.toUpperCase();
+
+    for( let c = 0; c < 9; c++ ) {
+      this.cubies[( this.side * 9 ) + c].children[1].material.color.setHex( Palette.sides[value.charAt( c )].hex );
+    }
+  }
+
+  get colors() {
+    let result = '';
+
+    for( let c = 0; c < 9; c++ ) {
+      for( let side in Palette.sides ) {
+        if( Palette.sides[side].hex == this.cubies[( this.side * 9 ) + c].children[1].material.color.getHex() ) {
+          result = result + Palette.sides[side].short;
+          break;
+        }
+      }
+    }
+
+    return result;
+  }  
+
   render() {
-    // this.cubies[13].rotation.x += 0.1;
-    // this.cubies[13].rotation.y += 0.1;
-    this.controls.update();    
+    // Orbit controls
+    if( this.controls ) {
+      this.controls.update();    
+    }
+
+    // Render scene
     this.renderer.render( this.scene, this.camera );    
+
+    // Keep rendering
     requestAnimationFrame( () => { return this.render(); } );    
+  }
+
+  rotate( degrees = -90, axis = 'y', part = 0 ) {
+    // Center 
+    this.pivot.rotation.set( 0, 0, 0 );
+    this.pivot.updateMatrixWorld();
+
+    let group = [];
+
+    if( part == 0 ) {
+      group = this.cubies.slice( 0 );
+    } else {
+      // Find cubies that apply to desired turn
+      for( let c = 0; c < this.cubies.length; c++ ) {
+        if( Math.round( this.cubies[c].position[axis] ) == part ) {
+          group.push( this.cubies[c] );
+        }
+      }
+    }
+
+    // Move from scene to pivot
+    for( let g = 0; g < group.length; g++ ) {
+      group[g].updateMatrixWorld();
+      THREE.SceneUtils.attach( group[g], this.scene, this.pivot );            
+    }
+
+    // Animation details
+    let animation = {
+      onComplete: function( cubies, pivot, scene ) {
+        // Update matrix
+        pivot.updateMatrixWorld();      
+
+        for( let c = 0; c < cubies.length; c++ ) {
+          THREE.SceneUtils.detach( cubies[c], pivot, scene );        
+        }    
+      },
+      onCompleteParams: [group, this.pivot, this.scene]
+    };
+
+    // Dynamic axis property
+    animation[axis] = THREE.Math.degToRad( degrees );
+
+    // Animate
+    TweenMax.to( this.pivot.rotation, 1, animation );
   }
 }
 
+Cube.CUBIE_DIMENSIONS = 1;
+Cube.STICKER_DIMENSIONS = 0.90;
 Cube.WIDTH = 93;
 Cube.HEIGHT = 93;
 
 class Face {
   constructor( target, color = 'green' ) {
-    this.palette = {
-      R: 'red', G: 'green', B: 'blue', W: 'white', O: 'orange', Y: 'yellow',
-      yellow: 'Y', orange: 'O', white: 'W', blue: 'B', green: 'G', red: 'R'
-    };
-
     let template = document.querySelector( '.face.template' );
 
     this.root = template.cloneNode( true );
     this.root.classList.remove( 'template' );
     target.appendChild( this.root );
 
-    this.side = this.root.querySelector( '.side' );
-    this.side.setAttributeNS( null, 'fill', color );
-
     this.cubies = this.root.querySelectorAll( '.cubies' );
+    this.cubies[4].setAttributeNS( null, 'full', color );
   }
 
   set colors( value ) {
     value = value.toUpperCase();
 
-    for( let c = 0; c < this.cubies.length; c++ ) {
-      this.cubies[c].setAttributeNS( null, 'fill', this.palette[value.charAt( c )] );
+    for( let c = 0; c < value.length; c++ ) {
+      this.cubies[c].setAttributeNS( null, 'fill', Palette.sides[value.charAt( c )].name );
     }
   }
 
@@ -251,11 +356,7 @@ class Face {
     let result = '';
 
     for( let c = 0; c < this.cubies.length; c++ ) {
-      if( c == 4 ) {
-        result = result + this.palette[this.side.getAttributeNS( null, 'fill' )];
-      }
-
-      result = result + this.palette[this.cubies[c].getAttributeNS( null, 'fill' )];
+      result = result + Palette.colors[this.cubies[c].getAttributeNS( null, 'fill' )];
     }
 
     return result;
@@ -299,6 +400,27 @@ class Camera {
   }  
 }
 
+Palette = {
+  sides: {    
+    G: {red: 0, green: 128, blue: 0, hex: 0x008000, l: 46, a: -51, b: 49, name: 'green', short: 'G', face: 'L'}, 
+    R: {red: 255, green: 0, blue: 0, hex: 0xff0000, l: 53, a: 80, b: 67, name: 'red', short: 'R', face: 'R'},     
+    B: {red: 0, green: 0, blue: 255, hex: 0x0000ff, l: 32, a: 79, b: -107, name: 'blue', short: 'B', face: 'B'}, 
+    O: {red: 255, green: 165, blue: 0, hex: 0xffa500, l: 74, a: 23, b: 78, name: 'orange', short: 'O', face: 'L'},  
+    W: {red: 255, green: 255, blue: 255, hex: 0xffffff, l: 100, a: 0, b: 0, name: 'white', short: 'W', face: 'U'}, 
+    Y: {red: 255, green: 255, blue: 0, hex: 0xffff00, l: 97, a: -21, b: 94, name: 'yellow', short: 'Y', face: 'D'}
+  },
+  colors: {
+    green: 'G',
+    red: 'R',
+    blue: 'B',
+    orange: 'O',
+    white: 'W',
+    yellow: 'Y'
+  },
+  nuetral: 0xd3d3d3,
+  background: 'black'
+};
+
 class Solver {
   constructor() {
     this.camera = new Camera();
@@ -311,8 +433,31 @@ class Solver {
       new Face( document.body, 'white' ),
       new Face( document.body, 'yellow' )
     ];
-    this.faces[0].colors = 'ROYGBWRO';
+
+    let scramble = [
+      'WYRBGBRBO',
+      'BWBOROYYG',
+      'OWYGBRRWO',
+      'BRGYOYGBW',
+      'ROWGWGOGW',
+      'GRBWYOYRY'
+    ];
+
+    for( let s = 0; s < scramble.length; s++ ) {
+      this.cube.side = s;
+      this.cube.colors = scramble[s];
+
+      this.faces[s].colors = scramble[s];
+    }
+
+    this.cube.side = 0;
+    console.log( this.cube.colors );
     console.log( this.faces[0].colors );
+
+    this.cube.all = 'WYRBGBRBOBWBOROYYGOWYGBRRWOBRGYOYGBWROWGWGOGWGRBWYOYRY';
+    console.log( this.cube.colors );
+
+    this.cube.rotate();
   }
 }
 
