@@ -1,0 +1,67 @@
+<html>
+<head>
+
+<meta name="viewport" content="initial-scale=1.0">
+
+<title>Solver</title>
+
+<style>
+body {
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+#controls {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 8px 0 8px 0;
+}
+
+#cube {
+  flex-grow: 1;
+}
+
+#shutter {
+  background-image: url( img/shutter.svg );
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border: solid 3px black;  
+  border-radius: 32px;  
+  height: 56px;
+  margin: 0;  
+  opacity: 0.80;  
+  padding: 0;
+  width: 56px;
+}
+</style>
+
+</head>
+<body>
+
+<div id="camera"></div>
+<div id="cube"></div>
+<div id="controls">
+  <button id="shutter"></button>
+</div>
+
+<script src="script/icicle.js"></script>
+
+<script>
+class Solver {
+  constructor() {
+    this.camera = new Icicle( document.querySelector( '#camera' ) );
+  }
+}
+
+let app = new Solver();
+</script>
+
+</body>
+</html>

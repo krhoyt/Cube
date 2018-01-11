@@ -1,0 +1,18 @@
+Palette = {
+  sides: {    
+    G: {red: 0, green: 128, blue: 0, hex: 0x008000, l: 46, a: -51, b: 49, name: 'green', short: 'G', face: 'L'}, 
+    R: {red: 255, green: 0, blue: 0, hex: 0xff0000, l: 53, a: 80, b: 67, name: 'red', short: 'R', face: 'R'},     
+    B: {red: 0, green: 0, blue: 255, hex: 0x0000ff, l: 32, a: 79, b: -107, name: 'blue', short: 'B', face: 'B'}, 
+    O: {red: 255, green: 165, blue: 0, hex: 0xffa500, l: 74, a: 23, b: 78, name: 'orange', short: 'O', face: 'L'},  
+    W: {red: 255, green: 255, blue: 255, hex: 0xffffff, l: 100, a: 0, b: 0, name: 'white', short: 'W', face: 'U'}, 
+    Y: {red: 255, green: 255, blue: 0, hex: 0xffff00, l: 97, a: -21, b: 94, name: 'yellow', short: 'Y', face: 'D'}
+  },
+  colors: {
+    green: 'G',
+    red: 'R',
+    blue: 'B',
+    orange: 'O',
+    white: 'W',
+    yellow: 'Y'
+  }
+};
