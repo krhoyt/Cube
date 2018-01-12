@@ -17,10 +17,19 @@ body {
   padding: 0;
 }
 
+svg {
+  left: 0;
+  height: 100vw;
+  position: absolute;  
+  right: 0;
+  width: 100vw;
+}
+
 #camera {
   height: 100vw;
   margin: 0 0 8px 0;
   overflow: hidden;
+  position: relative;
   width: 100vw;
 }
 
@@ -71,8 +80,10 @@ body {
 
 <!-- Camera -->
 <!-- Cropped video -->
+<!-- Mask overlay -->
 <div id="camera">
   <video playsinline></video>
+  <svg id="mask"></svg>
 </div>
 
 <!-- Show cube colors -->
@@ -99,6 +110,10 @@ body {
 <!-- Color sampler -->
 <script src="script/prism.js"></script>
 
+<!-- Mask -->
+<!-- Color tuning -->
+<script src="script/mask.js"></script>
+
 <!-- 3D cube -->
 <script src="script/cubicle.js"></script>
 
@@ -114,6 +129,8 @@ class Solver {
     this.cube = new Cubicle( holder, holder.clientWidth, holder.clientHeight );
 
     this.prism = new Prism( this.video );
+
+    this.mask = new Mask( document.querySelector( '#mask' ) );
 
     // Start web camera
     navigator.mediaDevices.getUserMedia( {
@@ -135,7 +152,7 @@ class Solver {
     } );  
 
     // Load color palette
-    fetch( 'data/palette.json' )
+    fetch( 'data/pastel.json' )
       .then( ( response ) => { 
         // Parse JSON
         return response.json() 
@@ -149,12 +166,14 @@ class Solver {
 
         // Reference colors
         this.prism.palette = data;
+        this.mask.palette = data;
       } );    
   }
 
   doShutter( evt ) {
     let side = this.prism.analyze( this.video );
     this.cube.colorize( Cubicle.FRONT, side );
+    this.mask.colors = side;
   }
 }
 

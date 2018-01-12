@@ -1,8 +1,78 @@
-[
-	{"name": "orange", "red": 201, "green": 85, "blue": 46},
-	{"name": "red", "red": 157, "green": 38, "blue": 44},	
-	{"name": "yellow", "red": 190, "green": 168, "blue": 67},	
-	{"name": "white", "red": 167, "green": 156, "blue": 154},	
-	{"name": "blue", "red": 14, "green": 65, "blue": 110},	
-	{"name": "green", "red": 69, "green": 151, "blue": 66}	
-]
+{
+  "sides": {
+    "G": {
+      "red": 69,
+      "green": 151,
+      "blue": 66,
+      "l": 56,
+      "a": -43,
+      "b": 37,
+      "name": "green",
+      "short": "G",
+      "face": "L"
+    },
+    "R": {
+      "red": 157,
+      "green": 38,
+      "blue": 44,
+      "l": 53,
+      "a": 80,
+      "b": 67,
+      "name": "red",
+      "short": "R",
+      "face": "R"
+    },
+    "B": { 
+      "red": 14,
+      "green": 65,
+      "blue": 110,
+      "l": 27,
+      "a": 2,
+      "b": -30,
+      "name": "blue",
+      "short": "B",
+      "face": "B"
+    },
+    "O": {
+      "red": 201,
+      "green": 85,
+      "blue": 46,
+      "l": 51,
+      "a": 44,
+      "b": 45,
+      "name": "orange",
+      "short": "O",
+      "face": "L"
+    },
+    "W": { 
+      "red": 167,
+      "green": 156,
+      "blue": 154,
+      "l": 65,
+      "a": 4, 
+      "b": 2,
+      "name": "white",
+      "short": "W",
+      "face":"U"
+    },
+    "Y": {
+      "red": 190,
+      "green": 168,
+      "blue": 67,
+      "l": 69,
+      "a": -4,
+      "b": 53,
+      "name": "yellow",
+      "short": "Y",
+      "face": "D"
+    }
+  },
+  "colors": {
+    "green": "G",
+    "red": "R",
+    "blue": "B",
+    "orange": "O",
+    "white": "W",
+    "yellow": "Y"
+  }
+}

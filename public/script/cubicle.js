@@ -168,12 +168,9 @@ class Cubicle {
         continue;
       }
 
-      let rgb = 'rgb( ' + 
-        this.palette.sides[colors.charAt( c )].red + ', ' + 
-        this.palette.sides[colors.charAt( c )].green + ', ' + 
-        this.palette.sides[colors.charAt( c )].blue + ' )';
-
-      this.cubies[( side * 9 ) + c].children[1].material.color.set( rgb );
+      this.cubies[( side * 9 ) + c].children[1].material.color.set( 
+        this.palette.sides[colors.charAt( c )].name 
+      );
     }
   }
 
