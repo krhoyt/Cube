@@ -6,6 +6,8 @@
 <title>Solver</title>
 
 <style>
+/* 55%, 30%, 15% -- 67%, 22%, 9% -- 605, 330, 165 */
+
 body {
   background-color: #fafafa;
   display: flex;
@@ -15,48 +17,144 @@ body {
   padding: 0;
 }
 
+#camera {
+  height: 100vw;
+  margin: 0 0 8px 0;
+  overflow: hidden;
+  width: 100vw;
+}
+
 #controls {
-  align-items: center;
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  padding: 8px 0 8px 0;
+}
+
+#controls > button {
+  background: none;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 24px;  
+  border: none;
+  border-radius: 2px;
+  flex-basis: 0;
+  flex-grow: 1;
+  min-height: 56px;
+  margin: 8px;
+}
+
+#controls > button:first-of-type {
+  background-image: url( img/more.svg ); 
+  opacity: 0.80;
+}
+
+#controls > button:nth-of-type( 2 ) {
+  background-color: #2196F3;   
+  background-image: url( img/camera.svg ); 
+  border-radius: 28px;
+  margin: 8px 0 8px 0;
+  max-width: 56px;
+}
+
+#controls > button:last-of-type {
+  background-image: url( img/clear.svg ); 
+  opacity: 0.80;
 }
 
 #cube {
+  background-color: #fafafa;
   flex-grow: 1;
-}
-
-#shutter {
-  background-image: url( img/shutter.svg );
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  border: solid 3px black;  
-  border-radius: 32px;  
-  height: 56px;
-  margin: 0;  
-  opacity: 0.80;  
-  padding: 0;
-  width: 56px;
 }
 </style>
 
 </head>
 <body>
 
-<div id="camera"></div>
-<div id="cube"></div>
-<div id="controls">
-  <button id="shutter"></button>
+<!-- Camera -->
+<!-- Cropped video -->
+<div id="camera">
+  <video playsinline></video>
 </div>
 
-<script src="script/icicle.js"></script>
+<!-- Show cube colors -->
+<!-- 3D or flat -->
+<div id="cube"></div>  
+
+<!-- Controls -->
+<div id="controls">
+  <button></button>
+  <button id="shutter"></button>
+  <button id="reset"></button>
+</div>
+
+<!-- ThreeJS -->
+<script src="../lib/mrdoob/three.js"></script>
+<script src="../lib/mrdoob/OrbitControls.js"></script>
+
+<!-- TweenMax -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/TweenMax.min.js"></script>
+
+<!-- Color space conversion -->
+<script src="lib/antimatter15/color.js"></script>
+
+<!-- Color sampler -->
+<script src="script/prism.js"></script>
+
+<!-- 3D cube -->
+<script src="script/cubicle.js"></script>
 
 <script>
 class Solver {
   constructor() {
-    this.camera = new Icicle( document.querySelector( '#camera' ) );
+    this.video = document.querySelector( 'video' );
+
+    this.shutter = document.querySelector( '#shutter' );
+    this.shutter.addEventListener( 'touchstart', ( evt ) => this.doShutter( evt ) );
+
+    let holder = document.querySelector( '#cube' );
+    this.cube = new Cubicle( holder, holder.clientWidth, holder.clientHeight );
+
+    this.prism = new Prism( this.video );
+
+    // Start web camera
+    navigator.mediaDevices.getUserMedia( {
+      audio: false, 
+      video: {
+        facingMode: {
+          exact: 'environment'
+        }
+      }
+    } )
+    .then( ( stream ) => {
+      // Set video source to web camera
+      this.video.srcObject = stream;
+
+      // Play the web camera video
+      this.video.play();        
+    } ).catch( ( error ) => {
+      console.log( error );
+    } );  
+
+    // Load color palette
+    fetch( 'data/palette.json' )
+      .then( ( response ) => { 
+        // Parse JSON
+        return response.json() 
+      } )
+      .then( ( data ) => {
+        // Assign palette
+        // Build cube
+        this.cube.palette = data;
+        // this.cube.colorize( Cubicle.FRONT, 'WYRBGBRBO');
+        this.cube.colorize( Cubicle.FRONT, 'ZZZZGZZZZ');
+
+        // Reference colors
+        this.prism.palette = data;
+      } );    
+  }
+
+  doShutter( evt ) {
+    let side = this.prism.analyze( this.video );
+    this.cube.colorize( Cubicle.FRONT, side );
   }
 }
 

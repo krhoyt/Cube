@@ -7,19 +7,26 @@ class Icicle {
     };
     this.width = width;
     this.height = height;
-    this.playing = false;
 
     // Canvas
     this.canvas = document.createElement( 'canvas' );
+    this.canvas.style.position = 'absolute';
+    this.canvas.style.visibility = 'hidden';    
     root.appendChild( this.canvas );
+
+    // Clipping
+    this.clipping = document.createElement( 'div' );
+    this.clipping.style.width = '100vw';
+    this.clipping.style.height = '100vw';
+    this.clipping.style.overflow = 'hidden';
+    root.appendChild( this.clipping );
 
     // Video
     // Not initially playing
     this.video = document.createElement( 'video' );
     this.video.setAttribute( 'playsinline', true );
-    this.video.style.position = 'absolute';
-    this.video.style.visibility = 'hidden';
-    root.appendChild( this.video );
+    this.video.style.width = '100vw';
+    this.clipping.appendChild( this.video );
 
     // Get list of media inputs for device
     navigator.mediaDevices.enumerateDevices().then( ( devices ) => {

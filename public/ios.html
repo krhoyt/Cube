@@ -14,38 +14,46 @@ body {
 video {
   padding: 0;
   margin: 0;
+  width: 100vw;
+}
+
+#camera {
+  height: 100vw;
+  overflow: hidden;
+  width: 100vw;
 }
 </style>
 
 </head>
 <body>
 
-<video playsinline></video>
+<div id="camera">
+  <video playsinline></video>
+</div>
 
 <script>
 class Camera {
   constructor() {
     this.video = document.querySelector( 'video' );
-    this.video.width = window.innerWidth;
 
     // Web camera
-    navigator.mediaDevices.getUserMedia( {audio: false, video: {facingMode: {exact: 'environment'}}} )
-      .then( ( stream ) => {
-        // Set video source to web camera
-        this.video.srcObject = stream;
-    
-        // Wait for stream to start
-        this.video.onloadedmetadata = function( evt ) {
-          let styles = window.getComputedStyle( this.video );
-          let dimensions = document.createElement( 'div' );
-          dimensions.innerHTML = styles.getPropertyValue( 'width' ) + ', ' + styles.getPropertyValue( 'height' );
-          document.body.appendChild( dimensions );
-          // Play the web camera video
-          this.video.play();
-        }.bind( this );
-      } ).catch( ( error ) => {
-        console.log( error );
-      } );  
+    navigator.mediaDevices.getUserMedia( {
+      audio: false, 
+      video: {
+        facingMode: {
+          exact: 'environment'
+        }
+      }
+    } )
+    .then( ( stream ) => {
+      // Set video source to web camera
+      this.video.srcObject = stream;
+
+      // Play the web camera video
+      this.video.play();        
+    } ).catch( ( error ) => {
+      console.log( error );
+    } );  
   }
 }
 
