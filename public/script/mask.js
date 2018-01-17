@@ -48,11 +48,27 @@ class Mask {
         element.setAttributeNS( null, 'width', square );
         element.setAttributeNS( null, 'height', square );
         element.setAttributeNS( null, 'rx', 6 );        
-        element.setAttributeNS( null, 'fill', 'none' );                    
+        element.setAttributeNS( null, 'fill', 'none' );
+        element.setAttributeNS( null, 'style', 'opacity: 0.80;' );
+        element.addEventListener( 'touchstart', ( evt ) => this.doChange( evt ) );
         root.appendChild( element );        
         this.faces.push( element );
       }
     }
+
+    this.picker = document.createElementNS( Mask.SVG, 'g' );
+
+    for( let color in this.pallette.sides ) {
+      let element = document.createElementNS( Mask.SVG, 'rect' );
+      element.setAttributeNS( null, 'x', 0 );
+      element.setAttributeNS( null, 'y', 0 );
+      element.setAttributeNS( null, 'width', Math.round( square / 2 ) );
+      element.setAttributeNS( null, 'height', Math.round( square / 3 ) );      
+      element.setAttributeNS( null, 'fill', color.name );      
+      this.picker.appendChild( element );
+    }
+
+    root.appendChild( this.picker );
   }
 
   set colors( value ) {
@@ -63,6 +79,10 @@ class Mask {
         this.palette.sides[value.charAt( f )].name 
       );
     }
+  }
+
+  doChange( evt ) {
+
   }
 }
 
