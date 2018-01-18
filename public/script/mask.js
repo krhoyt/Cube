@@ -1,6 +1,7 @@
 class Mask {
   constructor( root ) {
     this.faces = [];
+    this.listeners = [];
     this.palette = null;
 
     let element = document.createElementNS( Mask.SVG, 'rect' );
@@ -57,6 +58,27 @@ class Mask {
     }
   }
 
+  addEventListener( label, callback ) {
+    this.listeners.push( {
+      label: label,
+      callback: callback
+    } );
+  }
+
+  emit( label, evt ) {
+    for( let h = 0; h < this.listeners.length; h++ ) {
+      if( this.listeners[h].label == label ) {
+        this.listeners[h].callback( evt );
+      }
+    }
+  }  
+
+  clear() {
+    for( let f = 0; f < this.faces.length; f++ ) {
+      this.faces[f].setAttributeNS( null, 'fill', 'none' );
+    }
+  }
+  
   set colors( value ) {
     for( let f = 0; f < this.faces.length; f++ ) {
       this.faces[f].setAttributeNS( 
@@ -68,8 +90,12 @@ class Mask {
   }
 
   doChange( evt ) {
-    console.log( 'Click.' );
+    this.emit( Mask.CHANGE_EVENT, {
+      x: evt.target.getAttribute( 'x' ),
+      y: evt.target.getAttribute( 'y' )
+    } );
   }
 }
 
 Mask.SVG = 'http://www.w3.org/2000/svg';
+Mask.CHANGE_EVENT = 'change_event';
