@@ -73,6 +73,18 @@ svg {
   background-color: #fafafa;
   flex-grow: 1;
 }
+
+#picker {  
+  background-color: black;
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto auto;
+  left: 8px;
+  overflow: hidden;
+  position: absolute;
+  top: 8px;
+}
 </style>
 
 </head>
@@ -97,6 +109,9 @@ svg {
   <button id="reset"></button>
 </div>
 
+<!-- Picker -->
+<div id="picker"></div>
+
 <!-- ThreeJS -->
 <script src="../lib/mrdoob/three.js"></script>
 <script src="../lib/mrdoob/OrbitControls.js"></script>
@@ -109,6 +124,9 @@ svg {
 
 <!-- Color sampler -->
 <script src="script/prism.js"></script>
+
+<!-- Color picker -->
+<script src="script/picker.js"></script>
 
 <!-- Mask -->
 <!-- Color tuning -->
@@ -131,6 +149,8 @@ class Solver {
     this.prism = new Prism( this.video );
 
     this.mask = new Mask( document.querySelector( '#mask' ) );
+
+    this.picker = new Picker();
 
     // Start web camera
     navigator.mediaDevices.getUserMedia( {
@@ -167,6 +187,7 @@ class Solver {
         // Reference colors
         this.prism.palette = data;
         this.mask.palette = data;
+        this.picker.palette = data;
       } );    
   }
 

@@ -55,20 +55,6 @@ class Mask {
         this.faces.push( element );
       }
     }
-
-    this.picker = document.createElementNS( Mask.SVG, 'g' );
-
-    for( let color in this.pallette.sides ) {
-      let element = document.createElementNS( Mask.SVG, 'rect' );
-      element.setAttributeNS( null, 'x', 0 );
-      element.setAttributeNS( null, 'y', 0 );
-      element.setAttributeNS( null, 'width', Math.round( square / 2 ) );
-      element.setAttributeNS( null, 'height', Math.round( square / 3 ) );      
-      element.setAttributeNS( null, 'fill', color.name );      
-      this.picker.appendChild( element );
-    }
-
-    root.appendChild( this.picker );
   }
 
   set colors( value ) {
@@ -82,13 +68,8 @@ class Mask {
   }
 
   doChange( evt ) {
-
+    console.log( 'Click.' );
   }
 }
 
 Mask.SVG = 'http://www.w3.org/2000/svg';
-
-// <rect x="0" y="0" width="640" height="480" fill="white"></rect>        
-// <rect x="95" y="15" width="130" height="130" rx="6" fill="black"></rect>
-
-// <rect x="0" y="0" width="640" height="480" fill="rgba( 0, 0, 0, 0.20 )" style="mask: url( #three );"></rect>
