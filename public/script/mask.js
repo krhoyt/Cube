@@ -51,6 +51,7 @@ class Mask {
         element.setAttributeNS( null, 'rx', 6 );        
         element.setAttributeNS( null, 'fill', 'none' );
         element.setAttributeNS( null, 'style', 'opacity: 0.80;' );
+        element.setAttributeNS( null, 'data-index', ( r * 3 ) + c );
         element.addEventListener( 'touchstart', ( evt ) => this.doChange( evt ) );
         root.appendChild( element );        
         this.faces.push( element );
@@ -81,18 +82,28 @@ class Mask {
   
   set colors( value ) {
     for( let f = 0; f < this.faces.length; f++ ) {
-      this.faces[f].setAttributeNS( 
-        null, 
-        'fill', 
-        this.palette.sides[value.charAt( f )].name 
-      );
+      let color = this.palette.sides[value.charAt( f )].name ;
+
+      this.faces[f].setAttributeNS( null, 'fill', color );
+      this.faces[f].setAttributeNS( null, 'data-side', value.charAt( f ) );      
     }
+  }
+
+  get colors() {
+    let result = '';
+
+    for( let f = 0; f < this.faces.length; f++ ) {
+      result = result + this.faces[f].getAttribute( 'data-side' );
+    }
+
+    return result;
   }
 
   doChange( evt ) {
     this.emit( Mask.CHANGE_EVENT, {
       x: evt.target.getAttribute( 'x' ),
-      y: evt.target.getAttribute( 'y' )
+      y: evt.target.getAttribute( 'y' ),
+      index: evt.target.getAttribute( 'data-index' )
     } );
   }
 }

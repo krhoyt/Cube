@@ -197,11 +197,15 @@ class Solver {
   }
 
   doEdit( evt ) {
-    this.picker.show( evt );
+    this.picker.show( evt.x, evt.y, evt.index );
   }
 
   doPicker( evt ) {
-    console.log( evt );
+    let colors = this.mask.colors;
+    let left = colors.substr( 0, evt.index );
+    let right = colors.substring( evt.index + 1 );
+
+    this.mask.colors = left + evt.side + right;
   }
 
   doReset( evt ) {

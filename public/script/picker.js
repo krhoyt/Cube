@@ -32,10 +32,11 @@ class Picker {
     this.root.style.display = 'none';
   }
 
-  show( x = 8, y = 8 ) {
+  show( x = 8, y = 8, index = 0 ) {
     this.root.style.left = x + 'px';
     this.root.style.top = y + 'px';
     this.root.style.display = 'grid';
+    this.root.setAttribute( 'data-index', index );
   }
 
   set palette( value ) {
@@ -50,9 +51,15 @@ class Picker {
   }
 
   doPick( evt ) {
+    let x = evt.target.parentElement.style.left;
+    let y = evt.target.parentElement.style.top;
+
     this.emit( Picker.COLOR_EVENT, {
-      name: evt.target.getAttribute( 'fill' ),
-      side: evt.target.getAttribute( 'data-side' )
+      name: evt.target.style.backgroundColor,
+      side: evt.target.getAttribute( 'data-side' ),
+      x: parseInt( x ),
+      y: parseInt( y ),
+      index: parseInt( this.root.getAttribute( 'data-index' ) )
     } );
     this.hide();
   }
