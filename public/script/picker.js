@@ -1,5 +1,6 @@
 class Picker {
   constructor() {
+    this.index = 0;
     this.listeners = [];    
 
     this.root = document.querySelector( '#picker' );
@@ -32,11 +33,11 @@ class Picker {
     this.root.style.display = 'none';
   }
 
-  show( x = 8, y = 8, index = 0 ) {
+  show( x = 8, y = 8 ) {
     this.root.style.left = x + 'px';
     this.root.style.top = y + 'px';
     this.root.style.display = 'grid';
-    this.root.setAttribute( 'data-index', index );
+    this.root.setAttribute( 'data-index', this.index );
   }
 
   set palette( value ) {
@@ -48,6 +49,10 @@ class Picker {
       options[index].setAttribute( 'data-side', color );
       index = index + 1;
     }
+  }
+
+  set side( value ) {
+    this.index = value;
   }
 
   doPick( evt ) {

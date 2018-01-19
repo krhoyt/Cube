@@ -197,7 +197,8 @@ class Solver {
   }
 
   doEdit( evt ) {
-    this.picker.show( evt.x, evt.y, evt.index );
+    this.picker.side = evt.index;
+    this.picker.show( evt.x, evt.y );
   }
 
   doPicker( evt ) {
