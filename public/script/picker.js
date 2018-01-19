@@ -1,9 +1,8 @@
 class Picker {
-  constructor() {
-    this.index = 0;
+  constructor( path = '#picker' ) {
     this.listeners = [];    
 
-    this.root = document.querySelector( '#picker' );
+    this.root = document.querySelector( path );
     this.root.style.width = Math.round( (window.innerWidth - 32 ) / 3 ) + 'px';
     this.root.style.height = Math.round( (window.innerWidth - 32 ) / 3 ) + 'px';    
 
@@ -33,11 +32,13 @@ class Picker {
     this.root.style.display = 'none';
   }
 
-  show( x = 8, y = 8 ) {
+  move( x = 8, y = 8 ) {
     this.root.style.left = x + 'px';
     this.root.style.top = y + 'px';
+  }
+
+  show() {
     this.root.style.display = 'grid';
-    this.root.setAttribute( 'data-index', this.index );
   }
 
   set palette( value ) {
@@ -46,28 +47,22 @@ class Picker {
 
     for( let color in value.sides ) {
       options[index].style.backgroundColor = value.sides[color].name;
-      options[index].setAttribute( 'data-side', color );
+      options[index].setAttribute( 'data-color', color );
       index = index + 1;
     }
-  }
-
-  set side( value ) {
-    this.index = value;
   }
 
   doPick( evt ) {
     let x = evt.target.parentElement.style.left;
     let y = evt.target.parentElement.style.top;
 
-    this.emit( Picker.COLOR_EVENT, {
+    this.emit( Picker.SELECT, {
       name: evt.target.style.backgroundColor,
-      side: evt.target.getAttribute( 'data-side' ),
+      color: evt.target.getAttribute( 'data-color' ),
       x: parseInt( x ),
-      y: parseInt( y ),
-      index: parseInt( this.root.getAttribute( 'data-index' ) )
+      y: parseInt( y )
     } );
-    this.hide();
   }
 }
 
-Picker.COLOR_EVENT = 'color_event';
+Picker.SELECT = 'select_event';

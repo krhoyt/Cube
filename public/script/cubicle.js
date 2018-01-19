@@ -1,11 +1,13 @@
 class Cubicle {
-  constructor( root, width = 480, height = 480 ) {
+  constructor( path = '#cube', width = 480, height = 480 ) {
     // General
     this.cubies = [];
     this._palette = null;
 
+    this.root = document.querySelector( path );
+
     // Use background color of containing element
-    let styles = window.getComputedStyle( root, null );
+    let styles = window.getComputedStyle( this.root, null );
     let background = styles.getPropertyValue( 'background-color' );
 
     // Scene

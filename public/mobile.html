@@ -6,8 +6,6 @@
 <title>Solver</title>
 
 <style>
-/* 55%, 30%, 15% -- 67%, 22%, 9% -- 605, 330, 165 */
-
 body {
   background-color: #fafafa;
   display: flex;
@@ -122,6 +120,9 @@ svg {
 <!-- Color space conversion -->
 <script src="lib/antimatter15/color.js"></script>
 
+<!-- Camera -->
+<script src="script/camera.js"></script>
+
 <!-- Color sampler -->
 <script src="script/prism.js"></script>
 
@@ -138,43 +139,17 @@ svg {
 <script>
 class Solver {
   constructor() {
-    this.video = document.querySelector( 'video' );
+    this.camera = new Camera();
+    this.camera.start();
 
-    this.shutter = document.querySelector( '#shutter' );
-    this.shutter.addEventListener( 'touchstart', ( evt ) => this.doShutter( evt ) );
+    this.cube = new Cubicle();
 
-    let holder = document.querySelector( '#cube' );
-    this.cube = new Cubicle( holder, holder.clientWidth, holder.clientHeight );
-
-    this.reset = document.querySelector( '#reset' );
-    this.reset.addEventListener( 'touchstart', ( evt ) => this.doReset( evt ) ); 
-
-    this.prism = new Prism( this.video );
-
-    this.mask = new Mask( document.querySelector( '#mask' ) );
-    this.mask.addEventListener( Mask.CHANGE_EVENT, ( evt ) => this.doEdit( evt ) );
+    this.controls = new Controls();
+    this.controls.addEventListener( Controls.SHUTTER, ( evt ) => this.doShutter( evt ) );
+    this.controls.addEventListener( Controls.RESET, ( evt ) => this.doReset( evt ) );
 
     this.picker = new Picker();
-    this.picker.addEventListener( Picker.COLOR_EVENT, ( evt ) => this.doPicker( evt ) );
-
-    // Start web camera
-    navigator.mediaDevices.getUserMedia( {
-      audio: false, 
-      video: {
-        facingMode: {
-          exact: 'environment'
-        }
-      }
-    } )
-    .then( ( stream ) => {
-      // Set video source to web camera
-      this.video.srcObject = stream;
-
-      // Play the web camera video
-      this.video.play();        
-    } ).catch( ( error ) => {
-      console.log( error );
-    } );  
+    this.picker.addEventListener( Picker.SELECT, ( evt ) => this.doPicker( evt ) );    
 
     // Load color palette
     fetch( 'data/pastel.json' )
@@ -198,7 +173,8 @@ class Solver {
 
   doEdit( evt ) {
     this.picker.side = evt.index;
-    this.picker.show( evt.x, evt.y );
+    this.picker.move( evt.x, evt.y );
+    this.picker.show();
   }
 
   doPicker( evt ) {
@@ -207,6 +183,8 @@ class Solver {
     let right = colors.substring( evt.index + 1 );
 
     this.mask.colors = left + evt.side + right;
+    
+    this.picker.hide();
   }
 
   doReset( evt ) {

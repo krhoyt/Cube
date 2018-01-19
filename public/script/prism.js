@@ -1,10 +1,10 @@
 class Prism {
-  constructor( video ) {
+  constructor() {
     // Reference colors
     this.palette = null;
 
     // Reference to video
-    this.video = video;
+    this.video = document.querySelector( 'video' );
 
     // Canvas for analysis
     // Not visible
