@@ -1,5 +1,5 @@
 class Cubicle {
-  constructor( path = '#cube', width = 480, height = 480 ) {
+  constructor( path = '#cube' ) {
     // General
     this.cubies = [];
     this._palette = null;
@@ -9,23 +9,26 @@ class Cubicle {
     // Use background color of containing element
     let styles = window.getComputedStyle( this.root, null );
     let background = styles.getPropertyValue( 'background-color' );
+    
+    this.width = parseInt( styles.getPropertyValue( 'width' ) );
+    this.height = parseInt( styles.getPropertyValue( 'height' ) );
 
     // Scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color( background );        
 
     // Camera
-    this.camera = new THREE.PerspectiveCamera( 75, width / height, 0.1, 1000 );
+    this.camera = new THREE.PerspectiveCamera( 75, this.width / this.height, 0.1, 1000 );
     this.camera.position.z = 3.75;    
     // this.camera.position.y = 2;        
     this.camera.lookAt( new THREE.Vector3( 0, 0, 0 ) );        
     
     // Renderer
     this.renderer = new THREE.WebGLRenderer( {antialias: true} );
-    this.renderer.setSize( width, height );
+    this.renderer.setSize( this.width, this.height );
     
     // Add to document
-    root.appendChild( this.renderer.domElement );    
+    this.root.appendChild( this.renderer.domElement );    
 
     // Orbit controls
     this.controls = new THREE.OrbitControls( this.camera );

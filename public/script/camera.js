@@ -7,18 +7,37 @@ class Camera {
     this.video = this.root.querySelector( 'video' );
     
     this.prism = new Prism();    
-    
+
     this.mask = new Mask();
-    this.mask.addEventListener( Mask.CHANGE_EVENT, ( evt ) => this.doEdit( evt ) );    
+    this.mask.addEventListener( Mask.EDIT, ( evt ) => this.doEdit( evt ) );    
+
+    this.picker = new Picker();
+    this.picker.addEventListener( Picker.SELECT, ( evt ) => this.doSelect( evt ) );            
   }
 
   set palette( value ) {
     this._palette = value;
+
     this.mask.palette = value;
+    this.mask.side = 'G';
+
+    this.prism.palette = value;
+
+    this.picker.palette = value;
   }
 
   get palette() {
     return this._palette;
+  }
+
+  analyze() {
+    // let colors = this.prism.analyze();
+    this.mask.colors = this.prism.analyze();
+  }
+
+  reset() {
+    this.mask.clear();
+    this.picker.hide();
   }
 
   start() {
@@ -48,6 +67,12 @@ class Camera {
   }
 
   doEdit( evt ) {
-    
+    this.picker.move( evt.x, evt.y );
+    this.picker.show();
   }
+
+  doSelect( evt ) {
+    this.mask.color = evt.color;
+    this.picker.hide();
+  }  
 }

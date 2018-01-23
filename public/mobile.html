@@ -136,6 +136,9 @@ svg {
 <!-- 3D cube -->
 <script src="script/cubicle.js"></script>
 
+<!-- Controls -->
+<script src="script/controls.js"></script>
+
 <script>
 class Solver {
   constructor() {
@@ -147,9 +150,6 @@ class Solver {
     this.controls = new Controls();
     this.controls.addEventListener( Controls.SHUTTER, ( evt ) => this.doShutter( evt ) );
     this.controls.addEventListener( Controls.RESET, ( evt ) => this.doReset( evt ) );
-
-    this.picker = new Picker();
-    this.picker.addEventListener( Picker.SELECT, ( evt ) => this.doPicker( evt ) );    
 
     // Load color palette
     fetch( 'data/pastel.json' )
@@ -165,9 +165,10 @@ class Solver {
         this.cube.colorize( Cubicle.FRONT, 'ZZZZGZZZZ');
 
         // Reference colors
-        this.prism.palette = data;
-        this.mask.palette = data;
-        this.picker.palette = data;
+        this.camera.palette = data;
+        // this.prism.palette = data;
+        // this.mask.palette = data;
+        // this.picker.palette = data;
       } );    
   }
 
@@ -188,14 +189,16 @@ class Solver {
   }
 
   doReset( evt ) {
-    this.mask.clear();
-    this.picker.hide();
+    this.camera.reset();
   }
 
   doShutter( evt ) {
+    this.camera.analyze();
+    /*
     let side = this.prism.analyze( this.video );
     this.cube.colorize( Cubicle.FRONT, side );
     this.mask.colors = side;
+    */
   }
 }
 

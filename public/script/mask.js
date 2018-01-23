@@ -81,7 +81,7 @@ class Mask {
   
   set color( value ) {
     for( let f = 0; f < this.faces.length; f++ ) {
-      if( this.faces[f].getAttribute( 'data-selected' ) ) {
+      if( this.faces[f].getAttribute( 'data-selected' ) == 'true' ) {
         if( value == 'Z' ) {
           this.faces[f].setAttributeNS( null, 'fill', 'none' );
         } else {
@@ -94,7 +94,7 @@ class Mask {
     }
   }
 
-  get color( value ) {
+  get color() {
     return this.faces[f].getAttribute( 'data-color' );
   }
 
@@ -122,7 +122,7 @@ class Mask {
   }
 
   set side( value ) {
-    this.root.setAttributeNS( 'data-side', value );
+    this.root.setAttributeNS( null, 'data-side', value );
     this.faces[4].setAttributeNS( null, 'fill', this.palette.sides[value].name );
   }
 
