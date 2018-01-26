@@ -171,52 +171,27 @@ class Solver {
         return response.json() 
       } )
       .then( ( data ) => {
-        // Assign palette
-        // Build cube
+        // Colorize default state
         this.cube.palette = data;
-        // this.cube.colorize( Cubicle.FRONT, 'WYRBGBRBO');
         this.cube.colorize( Cubicle.FRONT, 'ZZZZGZZZZ');
+        this.cube.colorize( Cubicle.RIGHT, 'ZZZZRZZZZ' );
+        this.cube.colorize( Cubicle.BACK, 'ZZZZBZZZZ' );        
+        this.cube.colorize( Cubicle.LEFT, 'ZZZZOZZZZ' );        
+        this.cube.colorize( Cubicle.UP, 'ZZZZWZZZZ' );        
+        this.cube.colorize( Cubicle.DOWN, 'ZZZZYZZZZ' );                
 
         // Reference colors
         this.camera.palette = data;
-        this.camera.addEventListener( Camera.ANALYZE, ( evt ) => this.doCamera( evt ) );        
-        // this.prism.palette = data;
-        // this.mask.palette = data;
-        // this.picker.palette = data;
+        this.camera.addEventListener( Camera.ANALYZE, ( evt ) => this.doAnalyze( evt ) );        
       } );    
   }
 
-  doCamera( evt ) {
+  doAnalyze( evt ) {
     this.cube.colorize( Cubicle.FRONT, evt );
-  }
-
-  doEdit( evt ) {
-    this.picker.side = evt.index;
-    this.picker.move( evt.x, evt.y );
-    this.picker.show();
-  }
-
-  doPicker( evt ) {
-    let colors = this.mask.colors;
-    let left = colors.substr( 0, evt.index );
-    let right = colors.substring( evt.index + 1 );
-
-    this.mask.colors = left + evt.side + right;
-    
-    this.picker.hide();
   }
 
   doReset( evt ) {
     this.camera.reset();
-  }
-
-  doShutter( evt ) {
-    this.camera.analyze();
-    /*
-    let side = this.prism.analyze( this.video );
-    this.cube.colorize( Cubicle.FRONT, side );
-    this.mask.colors = side;
-    */
   }
 }
 

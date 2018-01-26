@@ -91,8 +91,6 @@ class Solver {
 
     this.cube = new Cubicle();
 
-    document.addEventListener( 'keyup', ( evt ) => this.doCapture( evt ) );
-
     // Load color palette
     fetch( 'data/pastel.json' )
       .then( ( response ) => { 
@@ -103,22 +101,21 @@ class Solver {
         // Assign palette
         // Build cube
         this.cube.palette = data;
-        this.cube.colorize( Cubicle.FRONT, 'ZZZZGZZZZ');
+        this.cube.colorize( Cubicle.FRONT, 'ZZZZGZZZZ' );
+        this.cube.colorize( Cubicle.RIGHT, 'ZZZZRZZZZ' );
+        this.cube.colorize( Cubicle.BACK, 'ZZZZBZZZZ' );        
+        this.cube.colorize( Cubicle.LEFT, 'ZZZZOZZZZ' );        
+        this.cube.colorize( Cubicle.UP, 'ZZZZWZZZZ' );        
+        this.cube.colorize( Cubicle.DOWN, 'ZZZZYZZZZ' );        
 
         // Reference colors
         this.camera.palette = data;
-        this.camera.addEventListener( Camera.ANALYZE, ( evt ) => this.doCamera( evt ) );
+        this.camera.addEventListener( Camera.ANALYZE, ( evt ) => this.doAnalyze( evt ) );
       } );        
   }
 
-  doCamera( evt ) {
+  doAnalyze( evt ) {
     this.cube.colorize( Cubicle.FRONT, evt );
-  }
-
-  doCapture( evt ) {
-    if( evt.keyCode == 32 ) {
-      this.camera.analyze();      
-    }
   }
 }
 
