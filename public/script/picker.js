@@ -1,14 +1,20 @@
 class Picker {
   constructor( path = '#picker' ) {
     this.listeners = [];    
+    this.touch = ( 'ontouchstart' in document.documentElement ) ? true : false;     
 
     this.root = document.querySelector( path );
-    this.root.style.width = Math.round( (window.innerWidth - 32 ) / 3 ) + 'px';
-    this.root.style.height = Math.round( (window.innerWidth - 32 ) / 3 ) + 'px';    
+    this.root.style.width = Math.round( ( window.innerWidth - 32 ) / 3 ) + 'px';
+    this.root.style.height = Math.round( ( window.innerWidth - 32 ) / 3 ) + 'px';    
+
+    if( !this.touch ) {
+      this.root.style.height = Math.round( ( this.root.parentElement.clientHeight - 32 ) / 3 ) + 'px';      
+      this.root.style.width = this.root.style.height;
+    }
 
     for( let c = 0; c < 6; c++ ) {
       let element = document.createElement( 'div' );
-      element.addEventListener( 'touchstart', ( evt ) => this.doPick( evt ) );
+      element.addEventListener( this.touch ? 'touchstart' : 'click', ( evt ) => this.doPick( evt ) );
       this.root.appendChild( element );
     }
   }

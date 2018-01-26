@@ -5,102 +5,65 @@
 
 <style>
 body {
-  background-color: #f5f5f5;
+  align-content: center;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
 } 
 
-video {
-  display: none;
+svg {
+  left: 0;
+  height: 480px;
+  position: absolute;  
+  top: 0;
+  width: 640px;
 }
 
 #camera {
+  height: 480px;
+  position: relative;  
+  width: 640px;
+}
+
+#cube {
+  background-color: #fafafa;
+  height: 480px;
+  margin-left: 16px;
   position: relative;
+  width: 368px;
 }
 
-#camera > canvas {
-  position: absolute;
-}
-
-#camera > svg {
-  position: absolute;
-}
-
-.template {
+#picker {  
+  border-radius: 6px;
   display: none;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto auto;
+  left: 8px;
+  overflow: hidden;
+  position: absolute;
+  top: 8px;
 }
 </style>
 
 </head>
 <body>
 
+<!-- Camera -->
+<!-- Cropped video -->
+<!-- Mask overlay -->
 <div id="camera">
-
-  <!-- Rendering surface -->
-  <canvas width="640" height="480"></canvas>
-
-  <!-- Modes -->
-  <svg width="640" height="480">
-    <defs>
-      <!-- Masking -->
-      <!-- 2x2x2 -->
-      <mask id="two">
-        <rect x="0" y="0" width="640" height="480" fill="white"></rect>        
-        <rect x="182" y="102" width="130" height="130" rx="6" fill="black"></rect>
-        <rect x="182" y="247" width="130" height="130" rx="6" fill="black"></rect>              
-        <rect x="327" y="102" width="130" height="130" rx="6" fill="black"></rect>
-        <rect x="327" y="247" width="130" height="130" rx="6" fill="black"></rect>      
-      </mask>
-
-      <!-- 3x3x3 -->
-      <mask id="three">
-        <rect x="0" y="0" width="640" height="480" fill="white"></rect>        
-        <rect x="95" y="15" width="130" height="130" rx="6" fill="black"></rect>
-        <rect x="95" y="175" width="130" height="130" rx="6" fill="black"></rect>      
-        <rect x="95" y="335" width="130" height="130" rx="6" fill="black"></rect>
-        <rect x="255" y="15" width="130" height="130" rx="6" fill="black"></rect>
-        <rect x="255" y="175" width="130" height="130" rx="6" fill="black"></rect>      
-        <rect x="255" y="335" width="130" height="130" rx="6" fill="black"></rect>                  
-        <rect x="415" y="15" width="130" height="130" rx="6" fill="black"></rect>
-        <rect x="415" y="175" width="130" height="130" rx="6" fill="black"></rect>      
-        <rect x="415" y="335" width="130" height="130" rx="6" fill="black"></rect>
-      </mask>      
-    </defs>
-
-    <!-- Apply -->
-    <rect x="0" y="0" width="640" height="480" fill="rgba( 0, 0, 0, 0.20 )" style="mask: url( #three );"></rect>
-  </svg>
-
+  <video playsinline></video>
+  <svg id="mask"></svg>
+  <div id="picker"></div>  
 </div>
 
-<!-- Web camera -->
-<!-- Not visible -->
-<video width="640" height="480"></video>
-
-<!-- Face template -->
-<svg class="face template" width="93" height="93">
-  <!-- Row -->
-  <rect width="31" height="31" rx="4"></rect> 
-  <rect class="cubies" x="2" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" width="31" height="31" rx="4"></rect> 
-  <rect class="cubies" x="33" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>  
-  <rect x="62" width="31" height="31" rx="4"></rect> 
-  <rect class="cubies" x="64" y="2" width="27" height="27" rx="2" fill="lightgrey"></rect>
-
-  <!-- Row -->
-  <rect y="30" width="31" height="31" rx="4"></rect> 
-  <rect class="cubies" x="2" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" y="30" width="31" height="31" rx="4"></rect> 
-  <rect class="side cubies" x="33" y="32" width="27" height="27" rx="2" fill="green"></rect>  
-  <rect x="62" y="30" width="31" height="31" rx="4"></rect> 
-  <rect class="cubies" x="64" y="32" width="27" height="27" rx="2" fill="lightgrey"></rect>    
-
-  <!-- Row -->
-  <rect y="60" width="31" height="31" rx="4"></rect> 
-  <rect class="cubies" x="2" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>
-  <rect x="31" y="60" width="31" height="31" rx="4"></rect> 
-  <rect class="cubies" x="33" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>  
-  <rect x="62" y="60" width="31" height="31" rx="4"></rect> 
-  <rect class="cubies" x="64" y="62" width="27" height="27" rx="2" fill="lightgrey"></rect>      
-</svg>
+<!-- Show cube colors -->
+<!-- 3D or flat -->
+<div id="cube"></div>  
 
 <!-- ThreeJS -->
 <script src="../lib/mrdoob/three.js"></script>
@@ -109,12 +72,58 @@ video {
 <!-- TweenMax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/TweenMax.min.js"></script>
 
+<!-- Color space conversion -->
+<script src="lib/antimatter15/color.js"></script>
+
 <!-- Application -->
-<script src="script/palette.js"></script>
-<script src="script/cubicle.js"></script>
+<script src="script/mask.js"></script>
+<script src="script/picker.js"></script>
+<script src="script/prism.js"></script>
 <script src="script/camera.js"></script>
-<script src="script/face.js"></script>
-<script src="script/solver.js"></script>
+<script src="script/cubicle.js"></script>
+
+<script>
+class Solver {
+  constructor() {
+    // Camera
+    this.camera = new Camera();
+    this.camera.start();
+
+    this.cube = new Cubicle();
+
+    document.addEventListener( 'keyup', ( evt ) => this.doCapture( evt ) );
+
+    // Load color palette
+    fetch( 'data/pastel.json' )
+      .then( ( response ) => { 
+        // Parse JSON
+        return response.json() 
+      } )
+      .then( ( data ) => {
+        // Assign palette
+        // Build cube
+        this.cube.palette = data;
+        this.cube.colorize( Cubicle.FRONT, 'ZZZZGZZZZ');
+
+        // Reference colors
+        this.camera.palette = data;
+        this.camera.addEventListener( Camera.ANALYZE, ( evt ) => this.doCamera( evt ) );
+      } );        
+  }
+
+  doCamera( evt ) {
+    this.cube.colorize( Cubicle.FRONT, evt );
+  }
+
+  doCapture( evt ) {
+    if( evt.keyCode == 32 ) {
+      this.camera.analyze();      
+    }
+  }
+}
+
+let app = new Solver();
+</script>
 
 </body>
 </html>

@@ -2,6 +2,7 @@ class Prism {
   constructor() {
     // Reference colors
     this.palette = null;
+    this.touch = ( 'ontouchstart' in document.documentElement ) ? true : false;     
 
     // Reference to video
     this.video = document.querySelector( 'video' );
@@ -15,6 +16,11 @@ class Prism {
     this.canvas.style.left = window.innerWidth + 'px';
     document.body.appendChild( this.canvas );
 
+    if( !this.touch ) {
+      this.canvas.width = this.video.parentElement.clientWidth;
+      this.canvas.height = this.video.parentElement.clientHeight;
+    }
+
     this.context = this.canvas.getContext( '2d' );
 
     // Sampling areas
@@ -22,13 +28,23 @@ class Prism {
 
     let square = this.canvas.width / 3;
     let space = square / 3;
+    let left = 0;
+
+    if( !this.touch ) {
+      left = Math.round( ( this.video.parentElement.clientWidth - this.video.parentElement.clientHeight ) / 2 );
+      square = this.canvas.height / 3;
+      space = square / 3;
+    }
 
     // Build sampling swatches
     for( let r = 0; r < 3; r++ ) {
       for( let c = 0; c < 3; c++ ) {
+        let x = left + Math.round( ( c * square ) + ( ( square - space ) / 2 ) );
+        let y = Math.round( ( r * square ) + ( ( square - space ) / 2 ) );
+
         this.swatches.push( {
-          x: Math.round( ( c * square ) + ( ( square - space ) / 2 ) ),
-          y: Math.round( ( r * square ) + ( ( square - space ) / 2 ) ),
+          x: x,
+          y: y,
           width: Math.round( space ),
           height: Math.round( space )
         } );

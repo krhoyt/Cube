@@ -70,10 +70,25 @@ svg {
 #cube {
   background-color: #fafafa;
   flex-grow: 1;
+  position: relative;
+}
+
+#cube > button {
+  background: none;
+  background-color: #2196F3;   
+  background-image: url( img/arrow.back.svg );   
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 24px;
+  border: none;
+  border-radius: 2px;
+  height: 36px;
+  position: absolute;
+  right: calc( 100vw / 5 );
+  width: 36px;
 }
 
 #picker {  
-  background-color: black;
   border-radius: 6px;
   display: none;
   grid-template-columns: auto auto;
@@ -94,6 +109,7 @@ svg {
 <div id="camera">
   <video playsinline></video>
   <svg id="mask"></svg>
+  <div id="picker"></div>  
 </div>
 
 <!-- Show cube colors -->
@@ -106,9 +122,6 @@ svg {
   <button id="shutter"></button>
   <button id="reset"></button>
 </div>
-
-<!-- Picker -->
-<div id="picker"></div>
 
 <!-- ThreeJS -->
 <script src="../lib/mrdoob/three.js"></script>
@@ -166,10 +179,15 @@ class Solver {
 
         // Reference colors
         this.camera.palette = data;
+        this.camera.addEventListener( Camera.ANALYZE, ( evt ) => this.doCamera( evt ) );        
         // this.prism.palette = data;
         // this.mask.palette = data;
         // this.picker.palette = data;
       } );    
+  }
+
+  doCamera( evt ) {
+    this.cube.colorize( Cubicle.FRONT, evt );
   }
 
   doEdit( evt ) {

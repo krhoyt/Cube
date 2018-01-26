@@ -3,6 +3,7 @@ class Cubicle {
     // General
     this.cubies = [];
     this._palette = null;
+    this.touch = ( 'ontouchstart' in document.documentElement ) ? true : false;         
 
     this.root = document.querySelector( path );
 
@@ -19,8 +20,13 @@ class Cubicle {
 
     // Camera
     this.camera = new THREE.PerspectiveCamera( 75, this.width / this.height, 0.1, 1000 );
-    this.camera.position.z = 3.75;    
-    // this.camera.position.y = 2;        
+    this.camera.position.z = 4;    
+
+    if( !this.touch ) {
+      this.camera.position.y = 2.5;
+      this.camera.position.x = 2.5;
+    }
+
     this.camera.lookAt( new THREE.Vector3( 0, 0, 0 ) );        
     
     // Renderer
@@ -47,6 +53,12 @@ class Cubicle {
 
     // Render
     this.render()
+
+    // Next button
+    this.next = document.createElement( 'button' );
+    this.next.style.top = Math.round( ( this.root.clientHeight - 36 ) / 2 ) + 'px';
+    this.next.addEventListener( 'touchstart', ( evt ) => this.doNext( evt ) );
+    this.root.appendChild( this.next );
   }
 
   // Manage orbit controls
@@ -165,6 +177,7 @@ class Cubicle {
   // Manage sticker colors
   // TODO: More robust assignment that works after rotation
   colorize( side = Cubicle.FRONT, colors = 'GGGGGGGGG' ) {
+    console.log( colors );
     colors = colors.toUpperCase();
 
     for( let c = 0; c < 9; c++ ) {
@@ -235,6 +248,10 @@ class Cubicle {
     // Animate
     TweenMax.to( this.pivot.rotation, 1, animation );
   }  
+
+  doNext( evt ) {
+    this.rotate();
+  }
 }
 
 Cubicle.FRONT = 0;
