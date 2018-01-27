@@ -1,42 +1,64 @@
 class Solver {
   constructor() {
-    this.camera = new Camera( false );
-    this.cube = new Cube();
-    this.faces = [
-      new Face( document.body, 'green' ),
-      new Face( document.body, 'red' ),
-      new Face( document.body, 'blue' ),
-      new Face( document.body, 'orange' ),
-      new Face( document.body, 'white' ),
-      new Face( document.body, 'yellow' )
-    ];
+    // Mobile or desktop
+    this.touch = ( 'ontouchstart' in document.documentElement ) ? true : false;     
 
-    let scramble = [
-      'WYRBGBRBO',
-      'BWBOROYYG',
-      'OWYGBRRWO',
-      'BRGYOYGBW',
-      'ROWGWGOGW',
-      'GRBWYOYRY'
-    ];
-
-    for( let s = 0; s < scramble.length; s++ ) {
-      this.cube.side = s;
-      this.cube.colors = scramble[s];
-
-      this.faces[s].colors = scramble[s];
+    // Desktop hooks
+    if( !this.touch ) {
+      document.addEventListener( 'keyup', ( evt ) => this.doKeyUp( evt ) );
     }
 
-    this.cube.side = 0;
-    console.log( this.cube.colors );
-    console.log( this.faces[0].colors );
+    // Camera
+    this.camera = new Camera();
+    this.camera.start();
 
-    this.cube.all = 'WYRBGBRBOBWBOROYYGOWYGBRRWOBRGYOYGBWROWGWGOGWGRBWYOYRY';
-    console.log( this.cube.colors );
+    // Cube
+    this.cube = new Cubicle();
 
-    this.cube.rotate();
+    // Load color palette
+    fetch( 'data/' + Solver.PALETTE )
+      .then( ( response ) => { 
+        // Parse JSON
+        return response.json() 
+      } )
+      .then( ( data ) => {
+        // Assign palette
+        // Build cube
+        this.cube.palette = data;
+        this.cube.colorize( Cubicle.FRONT, 'ZZZZGZZZZ' );
+        this.cube.colorize( Cubicle.RIGHT, 'ZZZZRZZZZ' );
+        this.cube.colorize( Cubicle.BACK, 'ZZZZBZZZZ' );        
+        this.cube.colorize( Cubicle.LEFT, 'ZZZZOZZZZ' );        
+        this.cube.colorize( Cubicle.UP, 'ZZZZWZZZZ' );        
+        this.cube.colorize( Cubicle.DOWN, 'ZZZZYZZZZ' );        
+
+        // Reference colors
+        this.camera.palette = data;
+        this.camera.addEventListener( Camera.ANALYZE, ( evt ) => this.doAnalyze( evt ) );
+      } );        
+  }
+
+  // Camera analysis complete
+  // Populate other components
+  doAnalyze( evt ) {
+    this.cube.colorize( Cubicle.FRONT, evt );
+  }
+
+  doKeyUp( evt ) {
+    // Space bar
+    // Capture
+    if( evt.keyCode == 32 ) {
+      this.camera.analyze();
+    }
+
+    // Letter (R)
+    // Reset
+    if( evt.keyCode == 82 ) {
+      this.camera.reset();
+    }
   }
 }
 
-// Application
+Solver.PALETTE = 'palette.json';
+
 let app = new Solver();

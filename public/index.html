@@ -1,53 +1,10 @@
 <html>
 <head>
 
-<title>Rubik's Cube Solver</title>
+<title>Cubicle</title>
 
-<style>
-body {
-  align-content: center;
-  background-color: #fafafa;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  margin: 0;
-  overflow: hidden;
-  padding: 0;
-} 
-
-svg {
-  left: 0;
-  height: 480px;
-  position: absolute;  
-  top: 0;
-  width: 640px;
-}
-
-#camera {
-  height: 480px;
-  position: relative;  
-  width: 640px;
-}
-
-#cube {
-  background-color: #fafafa;
-  height: 480px;
-  margin-left: 16px;
-  position: relative;
-  width: 368px;
-}
-
-#picker {  
-  border-radius: 6px;
-  display: none;
-  grid-template-columns: auto auto;
-  grid-template-rows: auto auto auto;
-  left: 8px;
-  overflow: hidden;
-  position: absolute;
-  top: 8px;
-}
-</style>
+<!-- Application styles -->
+<link rel="stylesheet" href="style/desktop.css">
 
 </head>
 <body>
@@ -65,6 +22,9 @@ svg {
 <!-- 3D or flat -->
 <div id="cube"></div>  
 
+<!-- Branding -->
+<div id="logo"></div>
+
 <!-- ThreeJS -->
 <script src="../lib/mrdoob/three.js"></script>
 <script src="../lib/mrdoob/OrbitControls.js"></script>
@@ -81,46 +41,7 @@ svg {
 <script src="script/prism.js"></script>
 <script src="script/camera.js"></script>
 <script src="script/cubicle.js"></script>
-
-<script>
-class Solver {
-  constructor() {
-    // Camera
-    this.camera = new Camera();
-    this.camera.start();
-
-    this.cube = new Cubicle();
-
-    // Load color palette
-    fetch( 'data/pastel.json' )
-      .then( ( response ) => { 
-        // Parse JSON
-        return response.json() 
-      } )
-      .then( ( data ) => {
-        // Assign palette
-        // Build cube
-        this.cube.palette = data;
-        this.cube.colorize( Cubicle.FRONT, 'ZZZZGZZZZ' );
-        this.cube.colorize( Cubicle.RIGHT, 'ZZZZRZZZZ' );
-        this.cube.colorize( Cubicle.BACK, 'ZZZZBZZZZ' );        
-        this.cube.colorize( Cubicle.LEFT, 'ZZZZOZZZZ' );        
-        this.cube.colorize( Cubicle.UP, 'ZZZZWZZZZ' );        
-        this.cube.colorize( Cubicle.DOWN, 'ZZZZYZZZZ' );        
-
-        // Reference colors
-        this.camera.palette = data;
-        this.camera.addEventListener( Camera.ANALYZE, ( evt ) => this.doAnalyze( evt ) );
-      } );        
-  }
-
-  doAnalyze( evt ) {
-    this.cube.colorize( Cubicle.FRONT, evt );
-  }
-}
-
-let app = new Solver();
-</script>
+<script src="script/solver.js"></script>
 
 </body>
 </html>

@@ -2,6 +2,7 @@ class Cubicle {
   constructor( path = '#cube' ) {
     // General
     this.cubies = [];
+    this.listeners = [];
     this._palette = null;
     this.touch = ( 'ontouchstart' in document.documentElement ) ? true : false;         
 
@@ -57,7 +58,7 @@ class Cubicle {
     // Next button
     this.next = document.createElement( 'button' );
     this.next.style.top = Math.round( ( this.root.clientHeight - 36 ) / 2 ) + 'px';
-    this.next.addEventListener( 'touchstart', ( evt ) => this.doNext( evt ) );
+    this.next.addEventListener( this.touch ? 'touchstart' : 'click', ( evt ) => this.doNext( evt ) );
     this.root.appendChild( this.next );
   }
 

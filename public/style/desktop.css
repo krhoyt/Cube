@@ -1,0 +1,73 @@
+body {
+  align-items: center;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+} 
+
+svg {
+  left: 0;
+  height: 480px;
+  position: absolute;  
+  top: 0;
+  width: 640px;
+}
+
+#camera {
+  height: 480px;
+  position: relative;  
+  width: 640px;
+}
+
+#cube {
+  background-color: #fafafa;
+  height: 480px;
+  margin-left: 16px;
+  position: relative;
+  width: 368px;
+}
+
+#cube > button {
+  background: none;
+  background-color: #2196F3;   
+  background-image: url( ../img/arrow.back.svg );   
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 24px;
+  border: none;
+  border-radius: 56px;
+  bottom: 0;
+  height: 56px;
+  outline: none;
+  position: absolute;
+  right: 0;
+  width: 56px;
+}
+
+#logo {
+  background-image: url( ../img/ibm.svg );
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: auto 24px;
+  bottom: 0;
+  height: 56px;
+  left: 0;
+  opacity: 0.30;
+  position: absolute;
+  right: 0;
+}
+
+#picker {  
+  border-radius: 6px;
+  display: none;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto auto;
+  left: 8px;
+  overflow: hidden;
+  position: absolute;
+  top: 8px;
+}
