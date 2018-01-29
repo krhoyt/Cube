@@ -14,6 +14,7 @@ class Solver {
 
     // Cube
     this.cube = new Cubicle();
+    this.cube.addEventListener( Cubicle.TURN, ( evt ) => this.doTurn( evt ) );
 
     // Load color palette
     fetch( 'data/' + Solver.PALETTE )
@@ -41,7 +42,7 @@ class Solver {
   // Camera analysis complete
   // Populate other components
   doAnalyze( evt ) {
-    this.cube.colorize( Cubicle.FRONT, evt );
+    this.cube.colorize( this.cube.side, evt );
   }
 
   doKeyUp( evt ) {
@@ -56,6 +57,10 @@ class Solver {
     if( evt.keyCode == 82 ) {
       this.camera.reset();
     }
+  }
+
+  doTurn( evt ) {
+    this.camera.reset();
   }
 }
 

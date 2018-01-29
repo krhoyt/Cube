@@ -2,8 +2,10 @@ class Cubicle {
   constructor( path = '#cube' ) {
     // General
     this.cubies = [];
+    this.group = [];
     this.listeners = [];
     this._palette = null;
+    this.side = Cubicle.FRONT;
     this.touch = ( 'ontouchstart' in document.documentElement ) ? true : false;         
 
     this.root = document.querySelector( path );
@@ -61,6 +63,21 @@ class Cubicle {
     this.next.addEventListener( this.touch ? 'touchstart' : 'click', ( evt ) => this.doNext( evt ) );
     this.root.appendChild( this.next );
   }
+
+  addEventListener( label, callback ) {
+    this.listeners.push( {
+      label: label,
+      callback: callback
+    } );
+  }
+
+  emit( label, evt ) {
+    for( let h = 0; h < this.listeners.length; h++ ) {
+      if( this.listeners[h].label == label ) {
+        this.listeners[h].callback( evt );
+      }
+    }
+  }  
 
   // Manage orbit controls
   set interactive( value ) {
@@ -204,43 +221,15 @@ class Cubicle {
 
   // Rotate whole cube or side of cube
   rotate( part = 0, axis = 'y', degrees = -90 ) {
-    // Center 
-    this.pivot.rotation.set( 0, 0, 0 );
-    this.pivot.updateMatrixWorld();
-
-    // Cubies to rotate
-    let group = [];
-
-    // This whole cube
-    if( part == 0 ) {
-      group = this.cubies.slice( 0 );
-    } else {
-      // Only a side of the cube
-      // Find cubies that apply to desired turn
-      for( let c = 0; c < this.cubies.length; c++ ) {
-        if( Math.round( this.cubies[c].position[axis] ) == part ) {
-          group.push( this.cubies[c] );
-        }
-      }
-    }
-
-    // Move from scene to pivot
-    for( let g = 0; g < group.length; g++ ) {
-      group[g].updateMatrixWorld();
-      THREE.SceneUtils.attach( group[g], this.scene, this.pivot );            
-    }
-
+    // Anchor on pivot
+    this.unmount( part, axis );
+    
     // Animation details
     let animation = {
-      onComplete: function( cubies, pivot, scene ) {
-        // Update matrix
-        pivot.updateMatrixWorld();      
-
-        for( let c = 0; c < cubies.length; c++ ) {
-          THREE.SceneUtils.detach( cubies[c], pivot, scene );        
-        }    
+      onComplete: function( cube ) {
+        cube.mount();
       },
-      onCompleteParams: [group, this.pivot, this.scene]
+      onCompleteParams: [this]
     };
 
     // Dynamic axis property
@@ -250,8 +239,83 @@ class Cubicle {
     TweenMax.to( this.pivot.rotation, 1, animation );
   }  
 
+  flip() {
+    this.unmount( 0, 'x' );
+    this.rotate( 0, 'x', 180 );
+  }
+
+  turn() {
+    this.unmount( 0, 'y' );
+    this.rotate( 0, 'y', -90 );
+  }
+
+  twist() {
+
+  }
+
+  mount() {
+    // Update matrix
+    this.pivot.updateMatrixWorld();      
+
+    // Move from pivot to scene
+    for( let g = 0; g < this.group.length; g++ ) {
+      THREE.SceneUtils.detach( this.group[g], this.pivot, this.scene );        
+    }    
+  }
+
+  unmount( part = 0, axis = 'y' ) {
+    // Set center 
+    this.pivot.rotation.set( 0, 0, 0 );
+    this.pivot.updateMatrixWorld();
+
+    // Cubies to rotate
+    this.group = [];
+
+    // This whole cube
+    if( part == 0 ) {
+      this.group = this.cubies.slice( 0 );
+    } else {
+      // Only a side of the cube
+      // Find cubies that apply to desired turn
+      for( let c = 0; c < this.cubies.length; c++ ) {
+        if( Math.round( this.cubies[c].position[axis] ) == part ) {
+          this.group.push( this.cubies[c] );
+        }
+      }
+    }
+
+    // Move from scene to pivot
+    for( let g = 0; g < this.group.length; g++ ) {
+      this.group[g].updateMatrixWorld();
+      THREE.SceneUtils.attach( this.group[g], this.scene, this.pivot );            
+    }
+  }
+
   doNext( evt ) {
-    this.rotate();
+    evt.target.blur();
+
+    if( this.side < 5 ) {
+      this.side = this.side + 1;
+    } else {
+      this.side = 0;
+    }
+
+    switch( this.side ) {
+      case 0:
+      case 1:
+      case 2:
+      case 3: 
+        this.turn();      
+        break;
+      case 4:
+        this.twist();
+        break;
+      case 5:
+        this.flip();
+        break;      
+    }
+
+    this.emit( Cubicle.TURN, this.side );    
   }
 }
 
@@ -266,3 +330,4 @@ Cubicle.CUBIE_DIMENSIONS = 1.0;
 Cubicle.NEUTRAL_COLOR = 0xd3d3d3;
 Cubicle.STICKER_DIMENSIONS = 0.90;
 Cubicle.STICKER_OFFSET = 0.10;
+Cubicle.TURN = 'event_turn';
