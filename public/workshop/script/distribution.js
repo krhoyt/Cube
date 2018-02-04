@@ -18,7 +18,7 @@ class Cube {
     this.image.addEventListener( 'load', evt => this.doImageLoad( evt ) );
 
     // Load color palette
-    fetch( '../data/palette.json' )
+    fetch( Cube.PALETTE_SOURCE )
       .then( ( response ) => { return response.json() } )
       .then( ( data ) => {
         console.log( 'Palette loaded.' );
@@ -31,26 +31,64 @@ class Cube {
       } );
   }
 
-  // Image processing
-  detect() {
-    console.log( 'Detect.' );
-
-    // Shortcuts 
-    let width = this.canvas.width;
-    let height = this.canvas.height;
-
-    // Put image onto canvas
-    this.context.drawImage( this.image, 0, 0, width, height );
-  }
-
   doChange( evt ) {
-    console.log( evt );
+    // Grab raw pixels
+    let pixels = this.context.getImageData( evt.x, evt.y, evt.width, evt.height );
+    
+    // Track closest match
+    let closest = null;
+
+    // Track statistical distribution
+    let distribution = {R: 0, G: 0, B: 0, Y: 0, O: 0, W: 0};
+
+    // Look through specified pixels
+    for( let p = 0; p < pixels.data.length; p++ ) {
+      // Get the RGB pixels
+      let rgb = {
+        red: pixels.data[( p * 4 )],            
+        green: pixels.data[( p * 4 ) + 1],
+        blue: pixels.data[( p * 4 ) + 2]
+      };
+
+      // Convert to Lab
+      let lab = rgb2lab( rgb );         
+
+      // Look through color palette
+      for( let color in this.palette.sides ) {
+        // let distance = deltaE( this.palette.sides[color], lab );
+        let distance = ciede2000( this.palette.sides[color], lab );
+
+        // First iteration
+        if( closest == null ) {
+          closest = {
+            distance: distance,
+            color: color,
+            source: lab
+          };
+        } else {
+          // Better match than what we have
+          if( closest.distance > distance ) {
+            closest.distance = distance;
+            closest.color = color;
+            closest.source = lab;
+          }
+        }
+      }
+
+      // Increment distribution
+      // 25w * 25h * 4rgba = 2500 
+      distribution[closest.color] += 1;
+    }
+
+    console.log( closest );
+    console.log( distribution );
   }
 
   // Image loaded
   doImageLoad( evt ) {
     console.log( 'Image loaded.' );
 
+    // Position ants on canvas
     this.ants.bounds( 
       ( window.innerWidth - this.canvas.width ) / 2,
       ( window.innerHeight - this.canvas.height ) / 2,
@@ -59,13 +97,22 @@ class Cube {
     )
     this.ants.show();
 
-    // Process image
-    this.detect();
+    // Put image onto canvas
+    this.context.drawImage( 
+      this.image, 
+      0, 
+      0, 
+      this.canvas.width, 
+      this.canvas.height 
+    );
   }
 }
 
 // Constants
-Cube.IMAGE_SOURCE = 'img/rubiks.cube.jpg';
+// Cube.IMAGE_SOURCE = 'img/rubiks.cube.jpg';
+// Cube.IMAGE_SOURCE = 'img/rubiks.colors.jpg';
+Cube.IMAGE_SOURCE = 'img/rounded.cube.jpg';
+Cube.PALETTE_SOURCE = '../data/palette.json';
 
 // Application
 let app = new Cube();
