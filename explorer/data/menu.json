@@ -1,0 +1,14 @@
+[
+  {
+    "label": "Camera Stream",
+    "index": 0,
+    "selected": true
+  }, {
+    "label": "Image Processing",
+    "items": [
+      {"label": "Gamma (Contrast)", "index": 1},
+      {"label": "Grayscale", "index": 2},
+      {"label": "Gaussian Blur", "index": 3}
+    ] 
+  }
+]

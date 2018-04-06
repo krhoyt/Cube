@@ -1,0 +1,52 @@
+dd {
+  color: rgba( 0, 0, 0, 0.87 );
+  cursor: pointer;
+  font-size: 15px;
+  height: 32px;
+  line-height: 32px;
+  -webkit-margin-start: 0;
+  padding: 0 0 0 24px;
+}
+
+dd.selected {
+  background-color: rgba( 0, 0, 0, 0.12 );
+  color: #0d47a1;
+}
+
+dt {
+  border-top: solid 1px rgba( 0, 0, 0, 0.12 );
+  color: rgba( 0, 0, 0, 0.54 );
+  font-size: 13px;
+  font-weight: 400;
+  height: 32px;
+  line-height: 32px;
+  margin: 8px 0 0 0;
+  padding: 8px 0 0 24px;
+}
+
+.block {
+  background-color: rgba( 0, 0, 0, 0.12 );
+  bottom: 0;
+  display: none;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.drawer {
+  background-color: white;
+  bottom: 0;
+  box-shadow: 0 2px 5px rgba( 0, 0, 0, 0.26 );            
+  left: 0;
+  margin: 0;
+  padding: 8px 0 8px 0;
+  position: absolute;
+  top: 0;
+  transition: left 0.60s;
+  width: 250px;
+}
+
+.drawer.hidden {
+  left: -260px;
+}

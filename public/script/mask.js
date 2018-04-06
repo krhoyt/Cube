@@ -1,7 +1,8 @@
-class Mask {
+class Mask extends Observer {
   constructor( path = '#mask' ) {
+    super();
+    
     this.faces = [];
-    this.listeners = [];
     this.palette = null;
     this.touch = ( 'ontouchstart' in document.documentElement ) ? true : false; 
 
@@ -80,21 +81,6 @@ class Mask {
       }
     }
   }
-
-  addEventListener( label, callback ) {
-    this.listeners.push( {
-      label: label,
-      callback: callback
-    } );
-  }
-
-  emit( label, evt ) {
-    for( let h = 0; h < this.listeners.length; h++ ) {
-      if( this.listeners[h].label == label ) {
-        this.listeners[h].callback( evt );
-      }
-    }
-  }  
 
   clear() {
     this.colors = 'ZZZZ' + this.side + 'ZZZZ';

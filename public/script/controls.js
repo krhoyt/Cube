@@ -1,6 +1,6 @@
-class Controls {
+class Controls extends Observer {
   constructor( path = '#controls' ) {
-    this.listeners = [];
+    super();
 
     this.root = document.querySelector( path );
     
@@ -10,21 +10,6 @@ class Controls {
     this.reset = this.root.querySelector( '#reset' );
     this.reset.addEventListener( 'touchstart', ( evt ) => this.doReset( evt ) );
   }
-
-  addEventListener( label, callback ) {
-    this.listeners.push( {
-      label: label,
-      callback: callback
-    } );
-  }
-
-  emit( label, evt ) {
-    for( let h = 0; h < this.listeners.length; h++ ) {
-      if( this.listeners[h].label == label ) {
-        this.listeners[h].callback( evt );
-      }
-    }
-  }  
 
   doReset( evt ) {
     this.emit( Controls.RESET, null );

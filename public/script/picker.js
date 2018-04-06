@@ -1,6 +1,7 @@
-class Picker {
+class Picker extends Observer {
   constructor( path = '#picker' ) {
-    this.listeners = [];    
+    super();
+
     this.touch = ( 'ontouchstart' in document.documentElement ) ? true : false;     
 
     this.root = document.querySelector( path );
@@ -16,21 +17,6 @@ class Picker {
       let element = document.createElement( 'div' );
       element.addEventListener( this.touch ? 'touchstart' : 'click', ( evt ) => this.doPick( evt ) );
       this.root.appendChild( element );
-    }
-  }
-
-  addEventListener( label, callback ) {
-    this.listeners.push( {
-      label: label,
-      callback: callback
-    } );
-  }
-
-  emit( label, evt ) {
-    for( let h = 0; h < this.listeners.length; h++ ) {
-      if( this.listeners[h].label == label ) {
-        this.listeners[h].callback( evt );
-      }
     }
   }
 

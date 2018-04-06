@@ -1,9 +1,10 @@
-class Cubicle {
+class Cubicle extends Observer {
   constructor( path = '#cube' ) {
+    super();
+
     // General
     this.cubies = [];
     this.group = [];
-    this.listeners = [];
     this._palette = null;
     this.side = Cubicle.FRONT;
     this.touch = ( 'ontouchstart' in document.documentElement ) ? true : false;         
@@ -63,21 +64,6 @@ class Cubicle {
     this.next.addEventListener( this.touch ? 'touchstart' : 'click', ( evt ) => this.doNext( evt ) );
     this.root.appendChild( this.next );
   }
-
-  addEventListener( label, callback ) {
-    this.listeners.push( {
-      label: label,
-      callback: callback
-    } );
-  }
-
-  emit( label, evt ) {
-    for( let h = 0; h < this.listeners.length; h++ ) {
-      if( this.listeners[h].label == label ) {
-        this.listeners[h].callback( evt );
-      }
-    }
-  }  
 
   // Manage orbit controls
   set interactive( value ) {

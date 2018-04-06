@@ -1,6 +1,7 @@
-class Camera {
+class Camera extends Observer {
   constructor( path = '#camera' ) {
-    this.listeners = [];
+    super();
+
     this._palette = null;
 
     this.root = document.querySelector( path );
@@ -14,21 +15,6 @@ class Camera {
 
     this.picker = new Picker();
     this.picker.addEventListener( Picker.SELECT, ( evt ) => this.doSelect( evt ) );            
-  }
-
-  addEventListener( label, callback ) {
-    this.listeners.push( {
-      label: label,
-      callback: callback
-    } );
-  }
-
-  emit( label, evt ) {
-    for( let h = 0; h < this.listeners.length; h++ ) {
-      if( this.listeners[h].label == label ) {
-        this.listeners[h].callback( evt );
-      }
-    }
   }
 
   set palette( value ) {
