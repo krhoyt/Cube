@@ -1,14 +1,29 @@
 [
   {
-    "label": "Camera Stream",
-    "index": 0,
-    "selected": true
+    "label": "Camera Stream", "index": 0, "selected": true
   }, {
     "label": "Image Processing",
     "items": [
       {"label": "Gamma (Contrast)", "index": 1},
-      {"label": "Grayscale", "index": 2},
-      {"label": "Gaussian Blur", "index": 3}
+      {"label": "Grayscale (Weighted)", "index": 2},
+      {"label": "Grayscale (Averaged)", "index": 3},      
+      {"label": "Gaussian Blur", "index": 4},
+      {"label": "CSS Filters", "index": 5},
+      {"label": "Canny Edge Detection", "index": 6},
+      {"label": "Dilate Edges", "index": 7},      
+      {"label": "Threshold Edges", "index": 8}
+    ] 
+  }, {
+    "label": "Feature Detection",
+    "items": [
+      {"label": "Contours", "index": 9},
+      {"label": "Polygons", "index": 10},
+      {"label": "Squares", "index": 11},      
+      {"label": "Hough Transform", "index": 12},
+      {"label": "Probabalistic", "index": 13},
+      {"label": "Dilate Edges", "index": 14},      
+      {"label": "Threshold Edges", "index": 15},
+      {"label": "Color Clustering", "index": 16}      
     ] 
   }
 ]

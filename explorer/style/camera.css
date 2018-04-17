@@ -1,0 +1,8 @@
+.filtered {
+  filter: grayscale( 1 ) blur( 3px );  
+}
+
+.passive {
+  position: absolute;
+  visibility: hidden;
+}

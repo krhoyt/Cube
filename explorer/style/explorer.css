@@ -1,22 +1,20 @@
 body {
+  align-items: center;
   background-color: #fafafa;
   display: flex;
   flex-direction: row;
   font-family: 'Roboto', sans-serif;
+  justify-content: center;
   margin: 0;
   overflow: hidden;
   padding: 0;
 }
 
-.header {
-  display: flex;
-  flex-direction: row;
-  left: 8px;
-  position: absolute;
-  top: 8px;
+#camera {
+  position: relative;  
 }
 
-.header > button {
+#menu {
   background: none;
   background-image: url( ../img/menu.black.svg );
   background-position: center;
@@ -24,40 +22,9 @@ body {
   background-size: 24px;
   border: none;
   height: 48px;
+  left: 8px;
   outline: none;
+  position: absolute;
+  top: 8px;
   width: 48px;  
-}
-
-.header > p {
-  color: white;
-  display: none;
-  font-size: 20px;
-  line-height: 56px;
-  margin: 0;
-  padding: 0;
-}
-
-@media only screen and (max-width: 640px) {
-  body {
-    flex-direction: column;
-  }
-
-  .header {
-    background-color: #0d47a1;
-    box-shadow: 0 2px 5px rgba( 0, 0, 0, 0.26 );        
-    height: 56px;
-    left: 0;
-    position: relative;
-    top: 0;
-  }
-
-  .header > button {
-    background-image: url( ../img/menu.white.svg );  
-    height: 56px;
-    width: 56px;
-  }
-
-  .header > p {
-    display: block;
-  }
 }

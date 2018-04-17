@@ -112,7 +112,8 @@ class Menu extends Observer {
         }
       }
 
-      this.emit( Menu.ITEM_SELECTED, evt.target.getAttribute( 'data-index' ) );
+      const index = parseInt( evt.target.getAttribute( 'data-index' ) )
+      this.emit( Menu.ITEM_SELECTED, index );
     }
 
     this.hide();

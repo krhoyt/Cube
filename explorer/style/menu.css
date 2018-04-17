@@ -9,7 +9,7 @@ dd {
 }
 
 dd.selected {
-  background-color: rgba( 0, 0, 0, 0.12 );
+  background-color: #f0f0f0;
   color: #0d47a1;
 }
 

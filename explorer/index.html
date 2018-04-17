@@ -11,32 +11,40 @@
 
 <!-- Application styles -->
 <link rel="stylesheet" href="style/menu.css">
+<link rel="stylesheet" href="style/camera.css">
 <link rel="stylesheet" href="style/explorer.css">
 
 </head>
 <body>
 
-<!-- Header with menu -->
-<div class="header">
-  <button></button>
-  <p>Cube Explorer</p>  
-</div>
+<!-- Menu options -->
+<button id="menu"></button>
 
 <!-- Camera -->
 <!-- Video -->
+<!-- Canvas -->
 <!-- Alignment mask -->
 <!-- Color picker -->
-<!--
 <div id="camera">
   <video playsinline></video>
+  <canvas class="passive"></canvas>
+  <!--
   <svg></svg>
   <div></div>  
+  -->  
 </div>
--->
+
+<!-- Libraries -->
+<script src="lib/jsfeat.js"></script>
+<script src="lib/jsfeat.kernel.js"></script>
+
+<script src="lib/cv.js"></script>
+<script src="lib/cv.kernel.js"></script>
 
 <!-- Application -->
 <script src="script/observer.js"></script>
 <script src="script/menu.js"></script>
+<script src="script/camera.js"></script>
 <script src="script/explorer.js"></script>
 
 </body>
