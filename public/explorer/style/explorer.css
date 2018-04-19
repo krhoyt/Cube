@@ -2,7 +2,7 @@ body {
   align-items: center;
   background-color: #fafafa;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   font-family: 'Roboto', sans-serif;
   justify-content: center;
   margin: 0;
@@ -16,7 +16,7 @@ body {
 
 #menu {
   background: none;
-  background-image: url( ../img/menu.black.svg );
+  background-image: url( ../img/menu.svg );
   background-position: center;
   background-repeat: no-repeat;
   background-size: 24px;

@@ -1,3 +1,0 @@
-function contrast( pixels ) {
-
-}

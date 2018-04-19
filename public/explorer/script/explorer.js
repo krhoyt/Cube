@@ -6,6 +6,8 @@ class Explorer {
 
     this.camera = new Camera( '#camera' );
     this.camera.start();
+
+    this.sides = new Sides();
   }
 
   // Menu item selected
@@ -14,7 +16,7 @@ class Explorer {
     console.log( evt );
 
     // Set camera mode
-    this.camera.setMode( evt );
+    this.camera.mode = evt;
   }
 }
 

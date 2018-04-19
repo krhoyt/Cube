@@ -18,12 +18,14 @@
     "items": [
       {"label": "Contours", "index": 9},
       {"label": "Polygons", "index": 10},
-      {"label": "Squares", "index": 11},      
-      {"label": "Hough Transform", "index": 12},
-      {"label": "Probabalistic", "index": 13},
-      {"label": "Dilate Edges", "index": 14},      
-      {"label": "Threshold Edges", "index": 15},
+      {"label": "Squares", "index": 11},
+      {"label": "Bounds (Probabalistic)", "index": 12},
+      {"label": "Live Tracking", "index": 13},
+      {"label": "Hough Transform", "index": 14},
+      {"label": "Hough (Probabalistic)", "index": 15},
       {"label": "Color Clustering", "index": 16}      
     ] 
+  }, {
+    "label": "Color Detection", "index": 17
   }
 ]
