@@ -1,11 +1,14 @@
-class Camera {
+class Camera extends Observer {
   constructor( path ) {
-    this.root = document.querySelector( path );
-    this.video = this.root.querySelector( 'video' );
-    this.canvas = this.root.querySelector( 'canvas' );
+    super();
+
     this.context = null;
     this.running = false;
     this.position = [];
+
+    this.root = document.querySelector( path );
+    this.video = this.root.querySelector( 'video' );
+    this.canvas = this.root.querySelector( 'canvas' );
   }
 
   set mode( value ) {
@@ -300,6 +303,11 @@ class Camera {
     }
   }
 
+  capture() {
+    console.log( 'Capture.' );
+    this.emit( Camera.EVENT_COLORS, [] );
+  }
+
   contrast( pixels, amount ) {
     let factor = ( 259 * ( amount + 255 ) ) / ( 255 * ( 259 - amount ) );
 
@@ -519,6 +527,7 @@ class Camera {
 
 Camera.CUBIE_MAXIMUM = 160;
 Camera.CUBIE_MINIMUM = 35;
+Camera.EVENT_COLORS = 'camera_colors';
 Camera.MEDIAN_MINIMUM = 0.50;
 Camera.MEDIAN_MAXIMUM = 2;
 Camera.MODE_VIDEO = 0;
@@ -535,7 +544,7 @@ Camera.MODE_POLYGONS = 10;
 Camera.MODE_SQUARES = 11;
 Camera.MODE_BOUNDS = 12;
 Camera.MODE_TRACKING = 13;
-Camera.MODE_COLORS = 17;
+Camera.MODE_DISTANCE = 16;
 Camera.SAMPLE_COUNT = 6;
 Camera.VARIATION_ANGLE = 20;
 Camera.VARIATION_ROTATE = 10;

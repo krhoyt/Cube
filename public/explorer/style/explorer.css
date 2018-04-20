@@ -14,6 +14,23 @@ body {
   position: relative;  
 }
 
+#cube {
+  display: none; 
+  flex-direction: row; 
+  height: 87px;
+  justify-content: space-between;  
+  margin-top: 8px;   
+  padding-top: 8px;
+  width: 640px; 
+}
+
+#logo {
+  opacity: 0.87;
+  position: absolute;
+  right: 32px;
+  top: 25px;
+}
+
 #menu {
   background: none;
   background-image: url( ../img/menu.svg );

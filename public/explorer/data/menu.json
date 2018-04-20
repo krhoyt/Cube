@@ -22,10 +22,12 @@
       {"label": "Bounds (Probabalistic)", "index": 12},
       {"label": "Live Tracking", "index": 13},
       {"label": "Hough Transform", "index": 14},
-      {"label": "Hough (Probabalistic)", "index": 15},
-      {"label": "Color Clustering", "index": 16}      
+      {"label": "Hough (Probabalistic)", "index": 15}
     ] 
   }, {
-    "label": "Color Detection", "index": 17
+    "label": "Color Detection",
+    "items": [
+      {"label": "Color Distance", "index": 16}      
+    ]
   }
 ]
