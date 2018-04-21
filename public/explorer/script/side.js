@@ -46,7 +46,7 @@ class Side {
     let result = [];
 
     for( let f = 0; f < this.faces.length; f++ ) {
-      result.push( this.faces[f].getAttributeNS( null, 'fill' ) );
+      result.push( this.faces[f].getAttribute( 'fill' ) );
     }
 
     return result;

@@ -14,16 +14,6 @@ body {
   position: relative;  
 }
 
-#cube {
-  display: none; 
-  flex-direction: row; 
-  height: 87px;
-  justify-content: space-between;  
-  margin-top: 8px;   
-  padding-top: 8px;
-  width: 640px; 
-}
-
 #logo {
   opacity: 0.87;
   position: absolute;
@@ -44,4 +34,21 @@ body {
   position: absolute;
   top: 8px;
   width: 48px;  
+}
+
+#scramble {
+  display: none; 
+  flex-direction: row; 
+  height: 87px;
+  margin-top: 8px;   
+  padding-top: 8px;
+  width: 640px; 
+}
+
+#scramble > svg {
+  margin-right: 23px;
+}
+
+#scramble > svg:last-of-type {
+  margin-right: 0;
 }

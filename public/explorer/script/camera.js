@@ -4,7 +4,9 @@ class Camera extends Observer {
 
     this.context = null;
     this.running = false;
-    this.position = [];
+    this.pixels = null;
+    this.position = null;
+    this.swatches = [];
 
     this.root = document.querySelector( path );
     this.video = this.root.querySelector( 'video' );
@@ -37,6 +39,7 @@ class Camera extends Observer {
       case Camera.MODE_CONTOURS:
       case Camera.MODE_CONTRAST:
       case Camera.MODE_DILATE:
+      case Camera.MODE_DISTANCE:
       case Camera.MODE_GAUSSIAN:
       case Camera.MODE_POLYGONS:
       case Camera.MODE_SQUARES:
@@ -69,22 +72,23 @@ class Camera extends Observer {
     let contours = [];
     let image = new jsfeat.matrix_t( this.canvas.width, this.canvas.height, jsfeat.U8_t | jsfeat.C1_t );    
     let kernel = ( 3 + 1 ) << 1;          
-    let pixels = this.context.getImageData( 0, 0, this.canvas.width, this.canvas.height );
+    
+    this.pixels = this.context.getImageData( 0, 0, this.canvas.width, this.canvas.height );
     
     switch( this.mode ) {
       case Camera.MODE_AVERAGED:
-        this.averaged( pixels );
+        this.averaged();
         break;
 
       case Camera.MODE_CANNY:
-        jsfeat.imgproc.grayscale( pixels.data, this.canvas.width, this.canvas.height, image, jsfeat.COLOR_RGBA2GRAY );            
+        jsfeat.imgproc.grayscale( this.pixels.data, this.canvas.width, this.canvas.height, image, jsfeat.COLOR_RGBA2GRAY );            
         jsfeat.imgproc.gaussian_blur( image, image, kernel, 0 );        
         jsfeat.imgproc.canny( image, image, 20, 40 );
-        this.render( image, pixels );
+        this.render( image, this.pixels );
         break;      
 
       case Camera.MODE_CONTOURS:
-        jsfeat.imgproc.grayscale( pixels.data, this.canvas.width, this.canvas.height, image, jsfeat.COLOR_RGBA2GRAY );            
+        jsfeat.imgproc.grayscale( this.pixels.data, this.canvas.width, this.canvas.height, image, jsfeat.COLOR_RGBA2GRAY );            
         jsfeat.imgproc.gaussian_blur( image, image, kernel, 0 );        
         jsfeat.imgproc.canny( image, image, 20, 40 );
         jsfeat.imgproc.dilate( image, image );
@@ -98,32 +102,32 @@ class Camera extends Observer {
         }
     
         contours = CV.findContours( image, [] );
-        this.render( image, pixels );
+        this.render( image, this.pixels );
         break;
 
 
       case Camera.MODE_CONTRAST:
-        this.contrast( pixels, 30 );
+        this.contrast( 30 );
         break;
 
       case Camera.MODE_DILATE:
-        jsfeat.imgproc.grayscale( pixels.data, this.canvas.width, this.canvas.height, image, jsfeat.COLOR_RGBA2GRAY );            
+        jsfeat.imgproc.grayscale( this.pixels.data, this.canvas.width, this.canvas.height, image, jsfeat.COLOR_RGBA2GRAY );            
         jsfeat.imgproc.gaussian_blur( image, image, kernel, 0 );        
         jsfeat.imgproc.canny( image, image, 20, 40 );
         jsfeat.imgproc.dilate( image, image );        
-        this.render( image, pixels );
+        this.render( image, this.pixels );
         break;      
 
       case Camera.MODE_GAUSSIAN:
-        jsfeat.imgproc.grayscale( pixels.data, this.canvas.width, this.canvas.height, image, jsfeat.COLOR_RGBA2GRAY );
+        jsfeat.imgproc.grayscale( this.pixels.data, this.canvas.width, this.canvas.height, image, jsfeat.COLOR_RGBA2GRAY );
         jsfeat.imgproc.gaussian_blur( image, image, kernel, 0 );        
-        this.render( image, pixels );
+        this.render( image, this.pixels );
         break;
 
       case Camera.MODE_BOUNDS:
       case Camera.MODE_POLYGONS:
       case Camera.MODE_SQUARES:
-        jsfeat.imgproc.grayscale( pixels.data, this.canvas.width, this.canvas.height, image, jsfeat.COLOR_RGBA2GRAY );            
+        jsfeat.imgproc.grayscale( this.pixels.data, this.canvas.width, this.canvas.height, image, jsfeat.COLOR_RGBA2GRAY );            
         jsfeat.imgproc.gaussian_blur( image, image, kernel, 0 );        
         jsfeat.imgproc.canny( image, image, 20, 40 );
         jsfeat.imgproc.dilate( image, image );
@@ -137,7 +141,7 @@ class Camera extends Observer {
         }
     
         contours = CV.findContours( image, [] );
-        this.render( image, pixels ); 
+        this.render( image, this.pixels ); 
         break;     
 
       case Camera.MODE_THRESHOLD:
@@ -145,14 +149,15 @@ class Camera extends Observer {
         let threshold = new CV.Image();
         let dilate = new CV.Image();
 
-        CV.grayscale( pixels, gray );
+        CV.grayscale( this.pixels, gray );
         CV.adaptiveThreshold( gray, threshold, 2, 7 );    
         CV.dilate( threshold, dilate );
-        this.render( dilate, pixels );
+        this.render( dilate, this.pixels );
         break;
 
+      case Camera.MODE_DISTANCE:
       case Camera.MODE_TRACKING:
-        jsfeat.imgproc.grayscale( pixels.data, this.canvas.width, this.canvas.height, image, jsfeat.COLOR_RGBA2GRAY );            
+        jsfeat.imgproc.grayscale( this.pixels.data, this.canvas.width, this.canvas.height, image, jsfeat.COLOR_RGBA2GRAY );            
         jsfeat.imgproc.gaussian_blur( image, image, kernel, 0 );        
         jsfeat.imgproc.canny( image, image, 20, 40 );
         jsfeat.imgproc.dilate( image, image );
@@ -169,21 +174,26 @@ class Camera extends Observer {
         break;
 
       case Camera.MODE_WEIGHTED:
-        this.weighted( pixels );
+        this.weighted( this.pixels );
         break;
     }
 
-    this.context.putImageData( pixels, 0, 0 );
+    this.context.putImageData( this.pixels, 0, 0 );
 
     if( contours.length > 0 ) {
-      if( this.mode === Camera.MODE_TRACKING ) {
+      if( this.mode === Camera.MODE_TRACKING || this.mode === Camera.MODE_DISTANCE ) {
         for( let c = 0; c < contours.length; c++ ) {
           // Epsilon (variation) based on length of contour array      
           contours[c] = CV.approxPolyDP( contours[c], contours[c].length * 0.03 );      
         }        
 
         this.squares( contours );          
-        this.bounds( contours, 'chartreuse', true );          
+
+        if( contours.length > 0 ) {
+          this.bounds( contours, 'chartreuse', true );          
+        } else {
+          this.position = null;
+        }
       } else {
         this.draw( contours, 'blue', false );      
       }
@@ -236,16 +246,16 @@ class Camera extends Observer {
     return true;
   }
 
-  averaged( pixels ) {
-    for( let p = 0; p < pixels.data.length; p += 4 ) {
+  averaged() {
+    for( let p = 0; p < this.pixels.data.length; p += 4 ) {
       let average = ( 
-        pixels.data[p] + 
-        pixels.data[p + 1] + 
-        pixels.data[p + 2] ) / 3;
+        this.pixels.data[p] + 
+        this.pixels.data[p + 1] + 
+        this.pixels.data[p + 2] ) / 3;
     
-      pixels.data[p] = average;
-      pixels.data[p + 1] = average;
-      pixels.data[p + 2] = average;
+      this.pixels.data[p] = average;
+      this.pixels.data[p + 1] = average;
+      this.pixels.data[p + 2] = average;
     }
   }
 
@@ -271,50 +281,90 @@ class Camera extends Observer {
       }
     }
 
-    let width = max_x - min_x;
-    let height = max_y - min_y;
+    this.position = {
+      x1: min_x,
+      y1: min_y,
+      x2: max_x,
+      y2: max_y,
+      width: max_x - min_x,
+      height: max_y - min_y
+    };
 
     this.context.beginPath();
     this.context.lineWidth = 5;
     this.context.strokeStyle = color;      
-    this.context.rect( min_x, min_y, width, height );
+    this.context.rect( this.position.x1, this.position.y1, this.position.width, this.position.height );
     this.context.closePath();
     this.context.stroke();
 
     if( cubies ) {
-      width = ( max_x - min_x ) / 3;
-      height = ( max_y - min_y ) / 3;
+      this.position.cubieWidth = ( this.position.x2 - this.position.x1 ) / 3;
+      this.position.cubieHeight = ( this.position.y2 - this.position.y1 ) / 3;
+      this.position.centers = [];
   
       for( let y = 0; y < 3; y++ ) {
         for( let x = 0; x < 3; x++ ) {
+          let center = {
+            x: Math.round( this.position.x1 + ( this.position.cubieWidth * x ) + ( this.position.cubieWidth / 2 ) ),            
+            y: Math.round( this.position.y1 + ( this.position.cubieHeight * y ) + ( this.position.cubieHeight / 2 ) )            
+          };
+
           this.context.beginPath();
           this.context.lineWidth = 5;
           this.context.strokeStyle = 'white';      
-          this.context.arc( 
-            min_x + ( width * x ) + ( width / 2 ), 
-            min_y + ( height * y ) + ( height / 2 ),
-            width / 2,
-            0,
-            2 * Math.PI
-          );
+          this.context.arc( center.x, center.y, this.position.cubieWidth / 2, 0, 2 * Math.PI );
           this.context.stroke();        
+
+          this.position.centers.push( center );
         }
       }
     }
   }
 
-  capture() {
-    console.log( 'Capture.' );
-    this.emit( Camera.EVENT_COLORS, [] );
+  capture( again = false ) {
+    let colors = [];
+
+    for( let c = 0; c < this.position.centers.length; c++ ) {
+      let pixel = ( ( this.position.centers[c].x * 4 ) + ( ( this.position.centers[c].y * this.canvas.width ) ) * 4 );
+      let rgb = {
+        red: this.pixels.data[pixel],
+        green: this.pixels.data[pixel + 1],
+        blue: this.pixels.data[pixel + 2]
+      };
+      let lab = rgb2lab( rgb );
+
+      let found = false;
+
+      for( let s = 0; s < this.swatches.length; s++ ) {
+        let delta = deltaE( this.swatches[s], lab );
+        
+        if( delta < Camera.COLOR_TOLERANCE ) {
+          found = true;
+          rgb = this.swatches[s];
+          break;
+        }
+      }
+
+      if( !found ) {
+        this.swatches.push( lab );
+      }
+
+      colors.push( `rgb(${rgb.red}, ${rgb.green}, ${rgb.blue})` );
+    }
+
+    this.emit( Camera.EVENT_COLORS, {
+      colors: colors,
+      again: again
+    } );
   }
 
-  contrast( pixels, amount ) {
+  contrast( amount ) {
     let factor = ( 259 * ( amount + 255 ) ) / ( 255 * ( 259 - amount ) );
 
-    for( let p = 0; p < pixels.data.length; p += 4 ) {
-      pixels.data[p] = factor * ( pixels.data[p] - 128 ) + 128;
-      pixels.data[p + 1] = factor * ( pixels.data[p] - 128 ) + 128;      
-      pixels.data[p + 2] = factor * ( pixels.data[p] - 128 ) + 128; 
+    for( let p = 0; p < this.pixels.data.length; p += 4 ) {
+      this.pixels.data[p] = factor * ( this.pixels.data[p] - 128 ) + 128;
+      this.pixels.data[p + 1] = factor * ( this.pixels.data[p] - 128 ) + 128;      
+      this.pixels.data[p + 2] = factor * ( this.pixels.data[p] - 128 ) + 128; 
     }
   }
 
@@ -346,6 +396,16 @@ class Camera extends Observer {
 
       this.context.stroke();
     }    
+  }
+
+  isTracking() {
+    let result = false;
+
+    if( this.position != null ) {
+      result = true;
+    }
+
+    return result;
   }
 
   // Look for (roughly) equal side lengths
@@ -512,19 +572,20 @@ class Camera extends Observer {
   }
 
   weighted( pixels ) {
-    for( let p = 0; p < pixels.data.length; p += 4 ) {
+    for( let p = 0; p < this.pixels.data.length; p += 4 ) {
       let brightness = ( 
-        ( 0.299 * pixels.data[p] ) + 
-        ( 0.587 * pixels.data[p + 1] ) + 
-        ( 0.114 * pixels.data[p + 2] ) );
+        ( 0.299 * this.pixels.data[p] ) + 
+        ( 0.587 * this.pixels.data[p + 1] ) + 
+        ( 0.114 * this.pixels.data[p + 2] ) );
     
-      pixels.data[p] = brightness;
-      pixels.data[p + 1] = brightness;
-      pixels.data[p + 2] = brightness;
+      this.pixels.data[p] = brightness;
+      this.pixels.data[p + 1] = brightness;
+      this.pixels.data[p + 2] = brightness;
     }
   }  
 }
 
+Camera.COLOR_TOLERANCE = 15;
 Camera.CUBIE_MAXIMUM = 160;
 Camera.CUBIE_MINIMUM = 35;
 Camera.EVENT_COLORS = 'camera_colors';
@@ -545,7 +606,6 @@ Camera.MODE_SQUARES = 11;
 Camera.MODE_BOUNDS = 12;
 Camera.MODE_TRACKING = 13;
 Camera.MODE_DISTANCE = 16;
-Camera.SAMPLE_COUNT = 6;
 Camera.VARIATION_ANGLE = 20;
 Camera.VARIATION_ROTATE = 10;
 Camera.VARIATION_SIDE = 0.60;
