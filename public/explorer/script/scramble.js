@@ -7,8 +7,8 @@ class Scramble extends Observer {
 
     this.root = document.querySelector( path );
 
-    for( let s = 0; s < Scramble.SIDE_COUNT; s++ ) {
-      let side = new Side( this.root );
+    for( let s = 0; s < Scramble.SIDE_LABELS.length; s++ ) {
+      let side = new Side( this.root, Scramble.SIDE_LABELS.charAt( s ) );
       this.sides.push( side );
     }
   }
@@ -35,20 +35,20 @@ class Scramble extends Observer {
     this.root.style.display = 'flex';
   }
 
-  side( evt ) {
-    if( evt.again ) {
+  side( data ) {
+    if( data.again ) {
       this.index = this.index - 1;
     }
       
-    this.sides[this.index].colors = evt.colors;
+    this.sides[this.index].colors = data.colors;
     this.sides[this.index].show();
 
-    if( this.index === ( Scramble.SIDE_COUNT - 1 ) ) {
+    if( this.index === ( Scramble.SIDE_LABELS.length - 1 ) ) {
       this.index = 0;
 
       let state = [];
 
-      for( let s = 0; s < Scramble.SIDE_COUNT; s++ ) {
+      for( let s = 0; s < Scramble.SIDE_LABELS.length; s++ ) {
         state = state.concat( this.sides[s].colors );
       }
 
@@ -60,4 +60,4 @@ class Scramble extends Observer {
 }
 
 Scramble.EVENT_READY = 'scramble_ready';
-Scramble.SIDE_COUNT = 6;
+Scramble.SIDE_LABELS = 'FRBLUD';

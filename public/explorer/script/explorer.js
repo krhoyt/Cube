@@ -83,7 +83,7 @@ class Explorer {
     console.log( state );
     console.log( 'Ready to solve.' );
 
-    let shuffle = Cube.fromString( state );  
+    // let shuffle = Cube.fromString( state );  
     // console.log( shuffle.toJSON() );
     // let algorithm = shuffle.solve();
     // console.log( algorithm );    

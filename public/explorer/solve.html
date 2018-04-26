@@ -3,19 +3,106 @@
 
 <title>Cube Solver</title>
 
+<link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet">
+
+<style>
+body {
+  align-content: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+button {
+  background-color: #2196F3;
+  border: none;
+  border-radius: 2px;
+  color: white;
+  font-family: 'Roboto', sans-serif;  
+  font-size: 14px;  
+  font-weight: 500;
+  height: 36px;
+  outline: none;
+  text-transform: uppercase;
+  width: 125px;
+}
+
+input {
+  border: none;
+  border-bottom: solid 1px rgba( 0, 0, 0, 0.42 );
+  color: rgba( 0, 0, 0, 0.54 );
+  font-family: 'Roboto', sans-serif;  
+  font-size: 16px;
+  margin-bottom: 8px;
+  outline: none;
+  padding-bottom: 8px;
+  padding-top: 16px;
+  width: 125px;
+}
+
+input:focus {
+  border-bottom: solid 2px #2196F3;  
+  padding-bottom: 7px;  
+}
+
+#sides {
+  display: flex;
+  flex-direction: column;
+}
+</style>
+
 </head>
 <body>
 
-<canvas width="640" height="480"></canvas>
-<video></video>
+<div id="sides">
+  <input type="text" placeholder="Up" value="FDFUURLFR" data-face="U">
+  <input type="text" placeholder="Right" value="UFULRRFFU" data-face="R">
+  <input type="text" placeholder="Front" value="DLBRFUDFR" data-face="F">
+  <input type="text" placeholder="Down" value="FDULDUBDB" data-face="D">
+  <input type="text" placeholder="Left" value="DBBULBRBR" data-face="L">
+  <input type="text" placeholder="Back" value="LBLDBRLLD" data-face="B">    
+  <button>Solve</button>
+</div>
 
-<script src="lib/jsfeat.js"></script>
-<script src="lib/jsfeat.kernel.js"></script>
+<script src="lib/ldez/cube.js"></script>
+<script src="lib/ldez/solve.js"></script>
 
-<script src="lib/cv.js"></script>
+<script>
+class Solution {
+  constructor() {
+    this.order = 'URFDLB';
 
-<script src="script/camera.live.js"></script>
-<script src="script/live.js"></script>
+    this.button = document.querySelector( 'button' );
+    this.button.addEventListener( 'click', ( evt ) => this.doSolve( evt ) );
+
+    Cube.initSolver( 'lib/cubejs/worker.js' );    
+  }
+
+  doSolve( evt ) {
+    let scramble = null;
+
+    for( let index = 0; index < this.order.length; index++ ) {
+      let side = document.querySelector( `input[data-face="${this.order.charAt( index )}"]` );
+
+      if( scramble === null ) {
+        scramble = side.value.trim().toUpperCase();
+      } else {
+        scramble += side.value.trim().toUpperCase();
+      }
+    }
+
+    console.log( scramble );
+
+    let shuffle = Cube.fromString( scramble );      
+    console.log( shuffle.toJSON() );    
+
+    let algorithm = shuffle.solve();
+    console.log( algorithm );        
+  }
+}
+
+let app = new Solution();
+</script>
 
 </body>
 </html>

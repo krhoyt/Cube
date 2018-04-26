@@ -1,10 +1,11 @@
 class Side {
-  constructor( element ) {
+  constructor( element, label ) {
     this.faces = [];
 
     this.svg = document.createElementNS( Side.SVG_NAMESPACE, 'svg' );
     this.svg.setAttributeNS( null, 'width', Side.SIZE );
-    this.svg.setAttributeNS( null, 'height', Side.SIZE );   
+    this.svg.setAttribute( 'data-label', label );
+    this.svg.setAttributeNS( null, 'height', Side.SIZE );
     this.svg.style.display = 'none'; 
 
     for( let y = 0; y < 3; y++ ) {
@@ -50,6 +51,14 @@ class Side {
     }
 
     return result;
+  }
+
+  set label( value ) {
+    this.svg.setAttribute( 'data-label', label );
+  }
+
+  get label() {
+    return this.svg.getAttribute( 'data-label' );
   }
 
   hide() {
