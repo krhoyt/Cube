@@ -41,6 +41,8 @@ class Camera extends Observer {
       case Camera.MODE_DILATE:
       case Camera.MODE_DISTANCE:
       case Camera.MODE_GAUSSIAN:
+      case Camera.MODE_HOUGH:
+      case Camera.MODE_HOUGH_P:      
       case Camera.MODE_POLYGONS:
       case Camera.MODE_SQUARES:
       case Camera.MODE_THRESHOLD:
@@ -72,6 +74,7 @@ class Camera extends Observer {
     let contours = [];
     let image = new jsfeat.matrix_t( this.canvas.width, this.canvas.height, jsfeat.U8_t | jsfeat.C1_t );    
     let kernel = ( 3 + 1 ) << 1;          
+    let lines = [];
     
     this.pixels = this.context.getImageData( 0, 0, this.canvas.width, this.canvas.height );
     
@@ -123,6 +126,34 @@ class Camera extends Observer {
         jsfeat.imgproc.gaussian_blur( image, image, kernel, 0 );        
         this.render( image, this.pixels );
         break;
+
+      case Camera.MODE_HOUGH:
+        jsfeat.imgproc.grayscale( this.pixels.data, this.canvas.width, this.canvas.height, image, jsfeat.COLOR_RGBA2GRAY );            
+        jsfeat.imgproc.gaussian_blur( image, image, kernel, 0 );        
+        jsfeat.imgproc.canny( image, image, 20, 40 );
+        this.render( image, this.pixels );
+        
+        lines = jsfeat.imgproc.hough_transform( image, 1, Math.PI / 180, 95 );
+        break;
+
+      case Camera.MODE_HOUGH_P:
+        jsfeat.imgproc.grayscale( this.pixels.data, this.canvas.width, this.canvas.height, image, jsfeat.COLOR_RGBA2GRAY );            
+        jsfeat.imgproc.gaussian_blur( image, image, kernel, 0 );        
+        jsfeat.imgproc.canny( image, image, 20, 40 );
+        this.render( image, this.pixels );
+        
+        lines = probabilisticHoughTransform( 
+          image.data, 
+          this.canvas.width, 
+          this.canvas.height, 
+          1, 
+          Math.PI / 180, 
+          65, 
+          95, 
+          50, 
+          100 
+        );
+        break;        
 
       case Camera.MODE_BOUNDS:
       case Camera.MODE_POLYGONS:
@@ -215,6 +246,8 @@ class Camera extends Observer {
           this.bounds( contours );
         }              
       }
+    } else if( this.mode === Camera.MODE_HOUGH || this.mode === Camera.MODE_HOUGH_P ) {
+      this.draw( lines, 'green', false );      
     }
 
     if( this.mode >= 1 ) {
@@ -375,26 +408,55 @@ class Camera extends Observer {
   }
 
   draw( contours, color, close = false  ) {
-    for( let c = 0; c < contours.length; c++ ) {
-      this.context.beginPath();
-      this.context.lineWidth = 5;
-      this.context.strokeStyle = color;      
-
-      // For each point in the contour
-      for( let p = 0; p < contours[c].length; p++ ) {
-        if( p == 0 ) {
-          this.context.moveTo( contours[c][p].x, contours[c][p].y );
-        } else {
-          this.context.lineTo( contours[c][p].x, contours[c][p].y );          
+    if( this.mode === Camera.MODE_HOUGH ) {
+      for( let h = 0; h < contours.length; h++ ) {
+        let a = Math.cos( contours[h][1] );
+        let b = Math.sin( contours[h][1] );
+        let x0 = a * contours[h][0];
+        let y0 = b * contours[h][0];
+        let x1 = x0 + this.canvas.width * ( 0 - b );
+        let y1 = y0 + this.canvas.width * a;
+        let x2 = x0 - this.canvas.width * ( 0 - b );
+        let y2 = y0 - this.canvas.width * a;
+  
+        this.context.beginPath();
+        this.context.moveTo( x1, y1 );
+        this.context.lineWidth = 2;
+        this.context.strokeStyle = color;
+        this.context.lineTo( x2, y2 );
+        this.context.stroke();
+      }     
+    } else if( this.mode === Camera.MODE_HOUGH_P ) {
+      for( let h = 0; h < contours.length; h++ ) {
+        this.context.beginPath();
+        this.context.moveTo( contours[h][0].x, contours[h][0].y );
+        this.context.lineWidth = 2;
+        this.context.strokeStyle = color;
+        this.context.lineTo( contours[h][1].x, contours[h][1].y );
+        this.context.stroke();      
+      }          
+    } else {
+      for( let c = 0; c < contours.length; c++ ) {
+        this.context.beginPath();
+        this.context.lineWidth = 5;
+        this.context.strokeStyle = color;      
+  
+        // For each point in the contour
+        for( let p = 0; p < contours[c].length; p++ ) {
+          if( p == 0 ) {
+            this.context.moveTo( contours[c][p].x, contours[c][p].y );
+          } else {
+            this.context.lineTo( contours[c][p].x, contours[c][p].y );          
+          }
         }
+  
+        // Optionally close for better visualization
+        if( close ) {        
+          this.context.closePath();
+        }      
+  
+        this.context.stroke();
       }
-
-      // Optionally close for better visualization
-      if( close ) {        
-        this.context.closePath();
-      }      
-
-      this.context.stroke();
     }    
   }
 
@@ -605,7 +667,10 @@ Camera.MODE_POLYGONS = 10;
 Camera.MODE_SQUARES = 11;
 Camera.MODE_BOUNDS = 12;
 Camera.MODE_TRACKING = 13;
-Camera.MODE_DISTANCE = 16;
+Camera.MODE_HOUGH = 14;
+Camera.MODE_HOUGH_P = 15;
+Camera.MODE_COLORS = 16;
+Camera.MODE_DISTANCE = 17;
 Camera.VARIATION_ANGLE = 20;
 Camera.VARIATION_ROTATE = 10;
 Camera.VARIATION_SIDE = 0.60;
