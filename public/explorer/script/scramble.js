@@ -13,11 +13,16 @@ class Scramble extends Observer {
     }
   }
 
-  hide() {
+  clear() {
+    this.index = 0;
+
     for( let s = 0; s < this.sides.length; s++ ) {
       this.sides[s].hide();
     }
+  }
 
+  hide() {
+    this.clear();
     this.root.style.display = 'none';
   }
 
@@ -45,19 +50,28 @@ class Scramble extends Observer {
 
     if( this.index === ( Scramble.SIDE_LABELS.length - 1 ) ) {
       this.index = 0;
-
-      let state = [];
-
-      for( let s = 0; s < Scramble.SIDE_LABELS.length; s++ ) {
-        state = state.concat( this.sides[s].colors );
-      }
-
-      this.emit( Scramble.EVENT_READY, state );
+      this.emit( Scramble.EVENT_COMPLETE, this.state );
     } else {
       this.index = this.index + 1;
     }
   }
+
+  get state() {
+    let result = [];
+
+    for( let s = 0; s < Scramble.SIDE_LABELS.length; s++ ) {
+      result.push( this.sides[s].colors );
+    }
+
+    return result;
+  }
+
+  set state( colors ) {
+    for( let s = 0; s < Scramble.SIDE_LABELS.length; s++ ) {
+      this.sides[s].colors = colors[s];
+    }
+  }
 }
 
-Scramble.EVENT_READY = 'scramble_ready';
+Scramble.EVENT_COMPLETE = 'scramble_complete';
 Scramble.SIDE_LABELS = 'FRBLUD';

@@ -44,6 +44,7 @@ class Camera extends Observer {
       case Camera.MODE_HOUGH:
       case Camera.MODE_HOUGH_P:      
       case Camera.MODE_POLYGONS:
+      case Camera.MODE_RAW:
       case Camera.MODE_SQUARES:
       case Camera.MODE_THRESHOLD:
       case Camera.MODE_TRACKING:
@@ -187,6 +188,7 @@ class Camera extends Observer {
         break;
 
       case Camera.MODE_DISTANCE:
+      case Camera.MODE_RAW:
       case Camera.MODE_TRACKING:
         jsfeat.imgproc.grayscale( this.pixels.data, this.canvas.width, this.canvas.height, image, jsfeat.COLOR_RGBA2GRAY );            
         jsfeat.imgproc.gaussian_blur( image, image, kernel, 0 );        
@@ -212,7 +214,9 @@ class Camera extends Observer {
     this.context.putImageData( this.pixels, 0, 0 );
 
     if( contours.length > 0 ) {
-      if( this.mode === Camera.MODE_TRACKING || this.mode === Camera.MODE_DISTANCE ) {
+      if( this.mode === Camera.MODE_TRACKING || 
+          this.mode === Camera.MODE_DISTANCE ||
+          this.mode === Camera.MODE_RAW ) {
         for( let c = 0; c < contours.length; c++ ) {
           // Epsilon (variation) based on length of contour array      
           contours[c] = CV.approxPolyDP( contours[c], contours[c].length * 0.03 );      
@@ -366,6 +370,7 @@ class Camera extends Observer {
       };
       let lab = rgb2lab( rgb );
 
+      /*
       let found = false;
 
       for( let s = 0; s < this.swatches.length; s++ ) {
@@ -381,11 +386,12 @@ class Camera extends Observer {
       if( !found ) {
         this.swatches.push( lab );
       }
+      */
 
-      colors.push( `rgb(${rgb.red}, ${rgb.green}, ${rgb.blue})` );
+      colors.push( lab );
     }
 
-    this.emit( Camera.EVENT_COLORS, {
+    this.emit( Camera.EVENT_CAPTURE, {
       colors: colors,
       again: again
     } );
@@ -650,7 +656,7 @@ class Camera extends Observer {
 Camera.COLOR_TOLERANCE = 15;
 Camera.CUBIE_MAXIMUM = 160;
 Camera.CUBIE_MINIMUM = 35;
-Camera.EVENT_COLORS = 'camera_colors';
+Camera.EVENT_CAPTURE = 'camera_capture';
 Camera.MEDIAN_MINIMUM = 0.50;
 Camera.MEDIAN_MAXIMUM = 2;
 Camera.MODE_VIDEO = 0;
@@ -669,7 +675,7 @@ Camera.MODE_BOUNDS = 12;
 Camera.MODE_TRACKING = 13;
 Camera.MODE_HOUGH = 14;
 Camera.MODE_HOUGH_P = 15;
-Camera.MODE_COLORS = 16;
+Camera.MODE_RAW = 16;
 Camera.MODE_DISTANCE = 17;
 Camera.VARIATION_ANGLE = 20;
 Camera.VARIATION_ROTATE = 10;

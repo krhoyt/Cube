@@ -11,56 +11,54 @@ class Explorer {
     this.menu.addEventListener( Menu.ITEM_SELECTED, ( evt ) => this.doMenuItem( evt ) );
 
     this.camera = new Camera( '#camera' );
-    this.camera.addEventListener( Camera.EVENT_COLORS, ( evt ) => this.doColors( evt ) );
+    this.camera.addEventListener( Camera.EVENT_CAPTURE, ( evt ) => this.doCapture( evt ) );
     this.camera.start();
 
     this.scramble = new Scramble( '#scramble' );
-    this.scramble.addEventListener( Scramble.EVENT_READY, ( evt ) => this.doReady( evt ) );
+    this.scramble.addEventListener( Scramble.EVENT_COMPLETE, ( evt ) => this.doComplete( evt ) );
   }
 
-  doColors( evt ) {
+  doCapture( evt ) {
     this.scramble.side( evt );
   }
 
-  doKey( evt ) {
-    console.log( evt );
+  doComplete( evt ) {
+    if( this.camera.mode === Camera.MODE_DISTANCE ) {
+      let swatches = [];
 
-    if( evt.keyCode === 32 || evt.keyCode === 160 ) {
-      if( this.camera.isTracking() ) {
-        if( evt.keyCode === 32 ) {
-          this.camera.capture();
-        } else if( evt.keyCode === 160 ) {
-          this.camera.capture( true );
-        } else {
-          console.log( 'Unknown command.' );
+      for( let s = 0; s < evt.length; s++ ) {
+        swatches.push( evt[s][4] );
+      }
+
+      for( let side = 0; side < evt.length; side++ ) {
+        for( let face = 0; face < evt[side].length; face++ ) {
+          let closest = {
+            distance: 1000,
+            index: 1000,
+            color: null
+          };
+
+          for( let color = 0; color < swatches.length; color++ ) {
+            let distance = deltaE( swatches[color], evt[side][face] );
+
+            if( distance < closest.distance ) {
+              closest.distance = distance;
+              closest.index = color;
+              closest.color = swatches[color];
+            }
+          }
+
+          evt[side][face] = closest.color;
+          evt[side][face].index = closest.index;
         }
-      } else {
-        console.log( 'Not tracking.' );
-      }
-    }    
-  }
-
-  // Menu item selected
-  doMenuItem( evt ) {
-    // Debug
-    console.log( evt );
-
-    // Set camera mode
-    this.camera.mode = evt;
-
-    if( evt >= Explorer.COLOR_DISTANCE ) {
-      if( !this.scramble.isVisible() ) {
-        document.body.addEventListener( 'keypress', this.doKey );
       }
 
-      this.scramble.show();
-    } else {
-      document.body.removeEventListener( 'keypress', this.dKey );
-      this.scramble.hide();
+      console.log( evt );
+
+      this.scramble.state = evt;
     }
-  }
 
-  doReady( evt ) {
+    /*
     let colors = ['U', 'R', 'F', 'D', 'L', 'B'];
     let state = '';
 
@@ -87,10 +85,50 @@ class Explorer {
     // console.log( shuffle.toJSON() );
     // let algorithm = shuffle.solve();
     // console.log( algorithm );    
+    */
+  }
+
+  doKey( evt ) {
+    if( evt.keyCode == 99 || evt.keyCode == 67 ) {
+      this.scramble.clear();
+    }
+
+    if( evt.keyCode === 32 || evt.keyCode === 160 ) {
+      if( this.camera.isTracking() ) {
+        if( evt.keyCode === 32 ) {
+          this.camera.capture();
+        } else if( evt.keyCode === 160 ) {
+          this.camera.capture( true );
+        } else {
+          console.log( 'Unknown command.' );
+        }
+      } else {
+        console.log( 'Not tracking.' );
+      }
+    }    
+  }
+
+  // Menu item selected
+  doMenuItem( evt ) {
+    // Set camera mode
+    this.camera.mode = evt;
+
+    if( evt >= Explorer.COLOR_RAW ) {
+      if( !this.scramble.isVisible() ) {
+        document.body.addEventListener( 'keypress', this.doKey );
+      }
+
+      this.scramble.clear();
+      this.scramble.show();
+    } else {
+      document.body.removeEventListener( 'keypress', this.dKey );
+      this.scramble.hide();
+    }
   }
 }
 
-Explorer.COLOR_DISTANCE = 16;
+Explorer.COLOR_RAW = 16;
+Explorer.COLOR_DISTANCE = 17;
 
 // Application entry point
 let app = new Explorer();

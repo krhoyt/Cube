@@ -1,6 +1,7 @@
 class Side {
   constructor( element, label ) {
     this.faces = [];
+    this.rgblab = null;
 
     this.svg = document.createElementNS( Side.SVG_NAMESPACE, 'svg' );
     this.svg.setAttributeNS( null, 'width', Side.SIZE );
@@ -38,19 +39,19 @@ class Side {
   }
 
   set colors( value ) {
+    this.rgblab = value.slice( 0 );
+
     for( let f = 0; f < this.faces.length; f++ ) {
-      this.faces[f].setAttributeNS( null, 'fill', value[f] );
+      this.faces[f].setAttributeNS( 
+        null, 
+        'fill', 
+        `rgb( ${this.rgblab[f].red}, ${this.rgblab[f].green}, ${this.rgblab[f].blue} )` 
+      );
     }  
   }
 
   get colors() {
-    let result = [];
-
-    for( let f = 0; f < this.faces.length; f++ ) {
-      result.push( this.faces[f].getAttribute( 'fill' ) );
-    }
-
-    return result;
+    return this.rgblab;
   }
 
   set label( value ) {
