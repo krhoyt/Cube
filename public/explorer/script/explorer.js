@@ -23,7 +23,7 @@ class Explorer {
   }
 
   doComplete( evt ) {
-    if( this.camera.mode === Camera.MODE_DISTANCE ) {
+    if( this.camera.mode >= Camera.MODE_DISTANCE ) {
       let swatches = [];
 
       for( let s = 0; s < evt.length; s++ ) {
@@ -56,36 +56,46 @@ class Explorer {
       console.log( evt );
 
       this.scramble.state = evt;
-    }
 
-    /*
-    let colors = ['U', 'R', 'F', 'D', 'L', 'B'];
-    let state = '';
+      if( this.camera.mode === Camera.MODE_SOLVE ) {
+        // Order sides
+        let local = [];
+        local.push( evt[4] );
+        local.push( evt[1] );
+        local.push( evt[0] );
+        local.push( evt[5] );
+        local.push( evt[3] );
+        local.push( evt[2] );
 
-    for( let c = 0; c < evt.length; c++ ) {
-      for( let s = 0; s < this.camera.swatches.length; s++ ) {
-        let color = this.camera.swatches[s];
-        let compare = `rgb(${color.red}, ${color.green}, ${color.blue})`;
+        // Make state string
+        let value = '';
 
-        if( evt[c] === compare ) {
-          state = state + s;
-          break;
+        for( let s = 0; s < local.length; s++ ) {
+          for( let f = 0; f < local[s].length; f++ ) {
+            value = value + local[s][f].index;
+          }
         }
+
+        // Replace index with side indicator
+        value = value.replace( new RegExp( '4', 'g' ), 'U' );      
+        value = value.replace( new RegExp( '1', 'g' ), 'R' );      
+        value = value.replace( new RegExp( '0', 'g' ), 'F' );      
+        value = value.replace( new RegExp( '5', 'g' ), 'D' );      
+        value = value.replace( new RegExp( '3', 'g' ), 'L' );      
+        value = value.replace( new RegExp( '2', 'g' ), 'B' ); 
+
+        console.log( value );
+
+        // Solve
+        let shuffle = Cube.fromString( value );  
+        let algorithm = shuffle.solve();
+        
+        console.log( algorithm );           
       }
+
+    } else {
+      console.log( evt );      
     }
-
-    for( let c = 0; c < colors.length; c++ ) {
-      state = state.replace( new RegExp( c.toString(), 'g' ), colors[c] );
-    }
-
-    console.log( state );
-    console.log( 'Ready to solve.' );
-
-    // let shuffle = Cube.fromString( state );  
-    // console.log( shuffle.toJSON() );
-    // let algorithm = shuffle.solve();
-    // console.log( algorithm );    
-    */
   }
 
   doKey( evt ) {

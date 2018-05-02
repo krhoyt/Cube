@@ -13,6 +13,22 @@ class Scramble extends Observer {
     }
   }
 
+  get state() {
+    let result = [];
+
+    for( let s = 0; s < Scramble.SIDE_LABELS.length; s++ ) {
+      result.push( this.sides[s].colors );
+    }
+
+    return result;
+  }
+
+  set state( colors ) {
+    for( let s = 0; s < Scramble.SIDE_LABELS.length; s++ ) {
+      this.sides[s].colors = colors[s];
+    }
+  }  
+
   clear() {
     this.index = 0;
 
@@ -53,22 +69,6 @@ class Scramble extends Observer {
       this.emit( Scramble.EVENT_COMPLETE, this.state );
     } else {
       this.index = this.index + 1;
-    }
-  }
-
-  get state() {
-    let result = [];
-
-    for( let s = 0; s < Scramble.SIDE_LABELS.length; s++ ) {
-      result.push( this.sides[s].colors );
-    }
-
-    return result;
-  }
-
-  set state( colors ) {
-    for( let s = 0; s < Scramble.SIDE_LABELS.length; s++ ) {
-      this.sides[s].colors = colors[s];
     }
   }
 }

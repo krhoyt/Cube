@@ -45,6 +45,7 @@ class Camera extends Observer {
       case Camera.MODE_HOUGH_P:      
       case Camera.MODE_POLYGONS:
       case Camera.MODE_RAW:
+      case Camera.MODE_SOLVE:
       case Camera.MODE_SQUARES:
       case Camera.MODE_THRESHOLD:
       case Camera.MODE_TRACKING:
@@ -189,6 +190,7 @@ class Camera extends Observer {
 
       case Camera.MODE_DISTANCE:
       case Camera.MODE_RAW:
+      case Camera.MODE_SOLVE:
       case Camera.MODE_TRACKING:
         jsfeat.imgproc.grayscale( this.pixels.data, this.canvas.width, this.canvas.height, image, jsfeat.COLOR_RGBA2GRAY );            
         jsfeat.imgproc.gaussian_blur( image, image, kernel, 0 );        
@@ -216,7 +218,8 @@ class Camera extends Observer {
     if( contours.length > 0 ) {
       if( this.mode === Camera.MODE_TRACKING || 
           this.mode === Camera.MODE_DISTANCE ||
-          this.mode === Camera.MODE_RAW ) {
+          this.mode === Camera.MODE_RAW ||
+          this.mode === Camera.MODE_SOLVE ) {
         for( let c = 0; c < contours.length; c++ ) {
           // Epsilon (variation) based on length of contour array      
           contours[c] = CV.approxPolyDP( contours[c], contours[c].length * 0.03 );      
@@ -369,24 +372,6 @@ class Camera extends Observer {
         blue: this.pixels.data[pixel + 2]
       };
       let lab = rgb2lab( rgb );
-
-      /*
-      let found = false;
-
-      for( let s = 0; s < this.swatches.length; s++ ) {
-        let delta = deltaE( this.swatches[s], lab );
-        
-        if( delta < Camera.COLOR_TOLERANCE ) {
-          found = true;
-          rgb = this.swatches[s];
-          break;
-        }
-      }
-
-      if( !found ) {
-        this.swatches.push( lab );
-      }
-      */
 
       colors.push( lab );
     }
@@ -677,6 +662,7 @@ Camera.MODE_HOUGH = 14;
 Camera.MODE_HOUGH_P = 15;
 Camera.MODE_RAW = 16;
 Camera.MODE_DISTANCE = 17;
+Camera.MODE_SOLVE = 18;
 Camera.VARIATION_ANGLE = 20;
 Camera.VARIATION_ROTATE = 10;
 Camera.VARIATION_SIDE = 0.60;
