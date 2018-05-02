@@ -6,3 +6,17 @@
   position: absolute;
   visibility: hidden;
 }
+
+.solution {
+  background-color: rgba( 0, 0, 0, 0.12 );
+  color: white;
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  height: 50px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  text-shadow: 2px 2px black;
+}

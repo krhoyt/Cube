@@ -16,6 +16,8 @@ class Explorer {
 
     this.scramble = new Scramble( '#scramble' );
     this.scramble.addEventListener( Scramble.EVENT_COMPLETE, ( evt ) => this.doComplete( evt ) );
+
+    this.solution = document.querySelector( '#camera > .solution' );
   }
 
   doCapture( evt ) {
@@ -90,6 +92,7 @@ class Explorer {
         let shuffle = Cube.fromString( value );  
         let algorithm = shuffle.solve();
         
+        this.solution.innerHTML = algorithm;
         console.log( algorithm );           
       }
 
