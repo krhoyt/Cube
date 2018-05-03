@@ -93,6 +93,8 @@ class Explorer {
         let algorithm = shuffle.solve();
         
         this.solution.innerHTML = algorithm;
+        this.solution.style.display = 'block';
+
         console.log( algorithm );           
       }
 
@@ -103,6 +105,7 @@ class Explorer {
 
   doKey( evt ) {
     if( evt.keyCode == 99 || evt.keyCode == 67 ) {
+      this.solution.style.display = 'none';
       this.scramble.clear();
     }
 
@@ -135,6 +138,7 @@ class Explorer {
       this.scramble.show();
     } else {
       document.body.removeEventListener( 'keypress', this.dKey );
+      this.solution.style.display = 'none';
       this.scramble.hide();
     }
   }

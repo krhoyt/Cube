@@ -8,15 +8,20 @@
 }
 
 .solution {
-  background-color: rgba( 0, 0, 0, 0.12 );
+  background-color: rgba( 0, 0, 0, 0.24 );
   color: white;
+  display: none;
   font-family: 'Roboto', sans-serif;
-  font-size: 18px;
-  font-weight: 500;
-  height: 50px;
+  font-size: 20px;
+  font-weight: 400;
+  height: 58px;
   left: 0;
+  line-height: 58px;
+  margin: 0;
+  padding: 0;
   position: absolute;
   right: 0;
   text-align: center;
   text-shadow: 2px 2px black;
+  top: 211px;
 }
