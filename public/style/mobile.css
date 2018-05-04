@@ -1,0 +1,81 @@
+body {
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+#camera {
+  height: 100vw;
+  margin: 0 0 8px 0;
+  overflow: hidden;
+  position: relative;
+  width: 100vw;
+}
+
+#camera > svg {
+  left: 0;
+  height: 100vw;
+  position: absolute;  
+  right: 0;
+  width: 100vw;
+}
+
+#controls {
+  display: flex;
+  flex-direction: row;
+}
+
+#controls > button {
+  background: none;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 24px;  
+  border: none;
+  border-radius: 2px;
+  flex-basis: 0;
+  flex-grow: 1;
+  min-height: 56px;
+  margin: 8px;
+}
+
+#controls > button:first-of-type {
+  background-image: url( ../img/more.svg ); 
+  opacity: 0.80;
+}
+
+#controls > button:nth-of-type( 2 ) {
+  background-color: #2196F3;   
+  background-image: url( ../img/camera.svg ); 
+  border-radius: 28px;
+  margin: 8px 0 8px 0;
+  max-width: 56px;
+}
+
+#controls > button:last-of-type {
+  background-image: url( ../img/clear.svg ); 
+  opacity: 0.80;
+}
+
+#scramble {
+  background-color: #fafafa;
+  flex-grow: 1;
+  position: relative;
+}
+
+#scramble > button {
+  background: none;
+  background-color: #2196F3;   
+  background-image: url( img/arrow.back.svg );   
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 24px;
+  border: none;
+  border-radius: 2px;
+  height: 36px;
+  position: absolute;
+  right: calc( 100vw / 5 );
+  width: 36px;
+}
