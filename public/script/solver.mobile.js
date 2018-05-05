@@ -1,6 +1,8 @@
 class Solver {
   constructor() {
     this.camera = new Camera();
+    this.camera.addEventListener( Camera.EVENT_COLORS, ( evt ) => this.doColors( evt ) );
+
     this.scramble = new Scramble();
 
     this.controls = new Controls();
@@ -9,6 +11,10 @@ class Solver {
 
   doCapture( evt ) {
     this.camera.capture();    
+  }
+
+  doColors( evt ) {
+    this.scramble.colors = evt;
   }
 }
 

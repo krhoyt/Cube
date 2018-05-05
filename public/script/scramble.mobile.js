@@ -2,6 +2,7 @@ class Scramble {
   constructor() {
     this.cubies = [];
     this.group = [];
+    this.side = 0;
 
     this.root = document.querySelector( '#scramble' );
 
@@ -35,6 +36,14 @@ class Scramble {
     this.buildCube();
 
     this.render();
+  }
+
+  set colors( values ) {
+    for( let c = 0; c < 9; c++ ) {
+      this.cubies[( this.side * 9 ) + c].children[1].material.color.set( 
+        `rgb( ${value[c].red}, ${value[c].green}, ${value[c].blue} )`
+      );
+    }
   }
 
   buildCube() {
