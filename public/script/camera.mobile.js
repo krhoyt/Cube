@@ -27,6 +27,8 @@ class Camera extends Observer {
           width: Math.round( space ),
           height: Math.round( space )
         } );
+        
+        console.log( this.swatches[this.swatches.length - 1] );
       }    
     }        
     
@@ -54,20 +56,16 @@ class Camera extends Observer {
     let colors = [];
 
     for( let s = 0; s < this.swatches.length; s++ ) {
-      for( let y = this.swatches[s].y; y < this.swatches[s].y + this.swatches[s].height; y++ ) {
-        for( let x = this.swatches[s].x; x < this.swatches[s].x + this.swatches[s].width; x++ ) {
-          let rgb = {
-            red: pixels.data[( y * window.innerWidth * 4 ) + ( x * 4 )],            
-            green: pixels.data[( y * window.innerWidth * 4 ) + ( x * 4 ) + 1],
-            blue: pixels.data[( y * window.innerWidth * 4 ) + ( x * 4 ) + 2]
-          };
-          rgb2lab( rgb );          
-          colors.push( lab );
-        }
-      }
+      let rgb = {
+        red: pixels.data[( this.swatches[s].y * window.innerWidth * 4 ) + ( this.swatches[s].x * 4 )],            
+        green: pixels.data[( this.swatches[s].y * window.innerWidth * 4 ) + ( this.swatches[s].x * 4 ) + 1],
+        blue: pixels.data[( this.swatches[s].y * window.innerWidth * 4 ) + ( this.swatches[s].x * 4 ) + 2]
+      };
+      rgb2lab( rgb );          
+      colors.push( rgb );
     }
 
-    this.emit( Camera.EVENT_CAPTURE, colors );
+    this.emit( Camera.EVENT_COLORS, colors );
   }
 }
 

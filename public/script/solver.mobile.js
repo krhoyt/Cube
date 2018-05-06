@@ -15,6 +15,7 @@ class Solver {
 
   doColors( evt ) {
     this.scramble.colors = evt;
+    this.scramble.rotate();
   }
 }
 

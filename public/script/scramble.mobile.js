@@ -39,9 +39,11 @@ class Scramble {
   }
 
   set colors( values ) {
+    console.log( values );
+
     for( let c = 0; c < 9; c++ ) {
       this.cubies[( this.side * 9 ) + c].children[1].material.color.set( 
-        `rgb( ${value[c].red}, ${value[c].green}, ${value[c].blue} )`
+        `rgb( ${values[c].red}, ${values[c].green}, ${values[c].blue} )`
       );
     }
   }
@@ -144,6 +146,26 @@ class Scramble {
     this.renderer.render( this.scene, this.camera );    
     requestAnimationFrame( () => { return this.render(); } );        
   }  
+
+  rotate() {
+    switch( this.side ) {
+      case 0:
+      case 1:
+      case 2:
+      case 3:
+        this.side = this.side + 1;
+
+        TweenMax.to( this.camera.position, 1.0, {
+          x: 4,
+          z: 0,
+          onUpdate: function( camera ) {
+            camera.lookAt( new THREE.Vector3( 0, 0, 0 ) );
+          },
+          onUpdateParams: [this.camera]
+        } );
+        break; 
+    }
+  }
 }
 
 Scramble.CUBIE_COLOR = 0x000000;
