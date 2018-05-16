@@ -12,23 +12,12 @@ class Camera extends Observer {
     
     this.swatches = [];    
 
-    let square = this.canvas.width / 3;
-    let space = square / 3;
-    let left = 0;
-
-    for( let r = 0; r < 3; r++ ) {
-      for( let c = 0; c < 3; c++ ) {
-        let x = left + Math.round( ( c * square ) + ( ( square - space ) / 2 ) );
-        let y = Math.round( ( r * square ) + ( ( square - space ) / 2 ) );
-
+    for( let r = 1; r < 6; r += 2 ) {
+      for( let c = 1; c < 6; c += 2 ) {
         this.swatches.push( {
-          x: x,
-          y: y,
-          width: Math.round( space ),
-          height: Math.round( space )
+          x: Math.round( c * ( window.innerWidth / 6 ) ),
+          y: Math.round( r * ( window.innerWidth / 6 ) )
         } );
-        
-        console.log( this.swatches[this.swatches.length - 1] );
       }    
     }        
     
