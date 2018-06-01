@@ -27,27 +27,37 @@ class Side {
   }
 
   set colors( value ) {
-    this.rgblab = value.slice( 0 );
-
-    for( let f = 0; f < this.faces.length; f++ ) {
-      this.faces[f].setAttributeNS( 
+    for( let c = 0; c < this.cubies.length; c++ ) {
+      this.cubies[c].setAttributeNS( 
         null, 
         'fill', 
-        `rgb( ${this.rgblab[f].red}, ${this.rgblab[f].green}, ${this.rgblab[f].blue} )` 
+        `rgb( ${value[c].red}, ${value[c].green}, ${value[c].blue} )` 
       );
+
+      this.cubies[c].setAttribute( 'data-red', value[c].red );
+      this.cubies[c].setAttribute( 'data-green', value[c].green );
+      this.cubies[c].setAttribute( 'data-blue', value[c].blue );
+      this.cubies[c].setAttribute( 'data-l', value[c].l );
+      this.cubies[c].setAttribute( 'data-a', value[c].a );
+      this.cubies[c].setAttribute( 'data-b', value[c].b );                        
     }  
   }
 
   get colors() {
-    return this.rgblab;
-  }
+    let results = [];
 
-  set label( value ) {
-    this.svg.setAttribute( 'data-label', label );
-  }
+    for( let c = 0; c < this.cubies.length; c++ ) {
+      results.push( {
+        red: parseInt( this.cubies[c].getAttribute( 'data-red' ) ),
+        green: parseInt( this.cubies[c].getAttribute( 'data-green' ) ),
+        blue: parseInt( this.cubies[c].getAttribute( 'data-blue' ) ),
+        l: parseFloat( this.cubies[c].getAttribute( 'data-l' ) ),
+        a: parseFloat( this.cubies[c].getAttribute( 'data-a' ) ),
+        b: parseFloat( this.cubies[c].getAttribute( 'data-b' ) )
+      } );
+    }
 
-  get label() {
-    return this.svg.getAttribute( 'data-label' );
+    return results;
   }
 
   set visible( value ) {
