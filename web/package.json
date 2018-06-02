@@ -1,0 +1,14 @@
+{
+  "name": "cacial",
+  "version": "1.0.0",
+  "description": "Solve the Rubik's Cube with computer vision.",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "krhoyt@us.ibm.com",
+  "license": "MIT",
+  "dependencies": {
+    "cfenv": "^1.1.0",
+    "express": "^4.16.3"
+  }
+}
