@@ -1,0 +1,23 @@
+body {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+div {
+  position: relative;
+}
+
+#input {
+  left: 0;
+  position: absolute;
+  top: 0;
+  visibility: hidden;
+}
+
+#output {
+  left: 0;
+  position: absolute;
+  top: 0;
+}

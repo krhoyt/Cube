@@ -1,0 +1,28 @@
+<html>
+<head>
+
+<title>TrackIt</title>
+
+<!-- Styles -->
+<link href="/style/worker.css" rel="stylesheet">
+
+</head>
+<body>
+
+<!-- Display camera stream -->
+<!-- Output canvas on top of video -->
+<div>
+  <video width="640" height="480"></video>
+  <canvas id="output" width="640" height="480"></canvas>
+</div>
+
+<!-- Offscreen -->
+<!-- For capturing the camera stream -->
+<canvas id="input" width="320" height="240"></canvas>
+
+<!-- Application -->
+<script src="/script/image.canvas.js"></script>
+<script src="/script/track.js"></script>
+
+</body>
+</html>
