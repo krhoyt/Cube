@@ -1,0 +1,177 @@
+<html>
+<head>
+
+<title>Threaded</title>
+
+<style>
+body {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+</style>
+
+</head>
+<body>
+
+<div>
+  <video width="640" height="480"></video>
+  <canvas id="overlay" width="640" height="480"></canvas>
+</div>
+
+<script>
+class ColdCanvas {
+  constructor( element = null, width = 640, height = 480 ) {
+    this.canvas = null;
+
+    if( !element ) {
+      this.canvas = document.createElement( 'canvas' );
+      this.canvas.style.visibility = 'hidden';
+      document.body.appendChild( this.canvas );
+    } else {
+      element.parentElement.style.position = 'relative';
+      this.canvas = element;
+    }
+
+    this.canvas.style.position = 'absolute';
+    this.canvas.style.left = 0;
+    this.canvas.style.top = 0;
+    this.canvas.width = width;
+    this.canvas.height = height;
+    this.context = this.canvas.getContext( '2d' );
+  }
+}
+
+class Threaded {
+  constructor() {
+    this.averages = [];
+    this.lines = [];
+    this.position = null;
+
+    this.worker = new Worker( 'script/hough.js' );
+    this.worker.addEventListener( 'message', ( evt ) => this.doWorkerMessage( evt ) );
+
+    this.overlay = new ColdCanvas( document.querySelector( '#overlay' ) );
+    this.offscreen = new ColdCanvas( null, 320, 240 );
+
+    this.video = document.querySelector( 'video' );
+
+    navigator.mediaDevices.getUserMedia( {
+      audio: false, 
+      video: true
+    } )
+    .then( ( stream ) => {
+      this.video.srcObject = stream;
+      this.video.play();        
+      
+      this.find();
+      this.process();
+    } ).catch( ( error ) => {
+      console.log( error );
+    } );       
+  }
+
+  find() {
+    this.overlay.context.clearRect( 0, 0, 640, 480 );
+
+    if( this.lines.length > 0 ) {
+      this.overlay.context.strokeStyle = 'red';
+      this.overlay.context.lineWidth = 2;
+
+      for( let i = 0; i < this.lines.length; i++ ) {
+        this.overlay.context.beginPath();
+        this.overlay.context.moveTo( this.lines[i][0].x, this.lines[i][0].y );      
+        this.overlay.context.lineTo( this.lines[i][1].x, this.lines[i][1].y );
+        this.overlay.context.stroke();
+      }
+    }
+
+    if( this.position ) {
+      this.overlay.context.strokeStyle = 'red';
+      this.overlay.context.lineWidth = 2;
+      this.overlay.context.strokeRect(
+        this.position.x * 2,
+        this.position.y * 2,
+        this.position.width * 2,
+        this.position.height * 2
+      );           
+    }
+
+    requestAnimationFrame( () => {return this.find();} );    
+  }
+
+  process() {
+    this.offscreen.context.drawImage( this.video, 0, 0, 320, 240 );    
+    const pixels = this.offscreen.context.getImageData( 0, 0, 320, 240 );        
+    this.worker.postMessage( pixels.data.buffer, [pixels.data.buffer] );
+  }
+
+  doWorkerMessage( evt ) {
+    console.log( evt.data );
+
+    this.lines = [];
+
+    for( let i = 0; i < evt.data.length; i++ ) {
+      const rho = evt.data[i][0];
+      const theta = evt.data[i][1];
+
+      const a = Math.cos( theta );
+      const b = Math.sin( theta );
+
+      const x = a * rho;
+      const y = b * rho;
+
+      const start = {
+        x: Math.round( x + 1000 * ( -b ) ),
+        y: Math.round( y + 1000 * ( a ) )
+      };
+
+      const end = {
+        x: Math.round( x - 1000 * ( -b ) ),
+        y: Math.round( y - 1000 * ( a ) )        
+      };
+
+      this.lines.push( [start, end] );
+    }
+
+    /*
+    if( evt.data.x ) {
+      this.averages.push( evt.data );
+
+      if( this.averages.length > 25 ) {
+        this.averages.shift();
+      }
+
+      let average = {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0
+      };
+
+      for( let a = 0; a < this.averages.length; a++ ) {
+        average.x = average.x + ( this.averages[a].x );
+        average.y = average.y + ( this.averages[a].y );
+        average.width = average.width + ( this.averages[a].width );
+        average.height = average.height + ( this.averages[a].height );                        
+      }
+
+      this.position = {
+        x: Math.round( average.x / this.averages.length ),
+        y: Math.round( average.y / this.averages.length ),
+        width: Math.round( average.width / this.averages.length ),
+        height: Math.round( average.height / this.averages.length )                       
+      };
+    }
+    */
+
+    this.process();
+  }
+}
+
+const app = new Threaded();
+</script>
+
+</body>
+</html>

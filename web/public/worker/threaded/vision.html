@@ -1,0 +1,38 @@
+<html>
+<head>
+
+<title>Vision</title>
+
+</head>
+<body>
+
+<img src="vision.jpg"> 
+
+<script>
+class Vision {
+  static grayscale( image ) {
+    for( let i = 0; i < image.data.length; i += 4 ) {
+      const average = Math.floor( (
+        image.data[i] + image.data[i + 1] + image.data[i + 2]
+      ) / 3 );
+
+      image.data[i] = average;
+      image.data[i + 1] = average;
+      image.data[i + 2] = average;
+    }
+  }
+
+  static gaussian( image, kernel ) {
+    
+  }
+}
+
+class Application {
+  constructor() {
+
+  }
+}
+</script>
+
+</body>
+</html>

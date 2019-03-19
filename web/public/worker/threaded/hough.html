@@ -1,0 +1,86 @@
+<html>
+<head>
+
+<title>Hough</title>
+
+<style>
+body {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+img {
+  left: 0;
+  position: absolute;
+  right: 0;
+  visibility: hidden;
+}
+</style>
+
+</head>
+<body>
+
+<img src="rounded.cube.sized.jpg">
+<canvas width="640" height="480"></canvas>
+
+<script src="lib/jsfeat.js"></script>
+<script src="lib/probabilistic.js"></script>
+
+<script>
+class Hough {
+  constructor() {
+    this.image = document.querySelector( 'img' );
+    this.canvas = document.querySelector( 'canvas' );
+    this.context = this.canvas.getContext( '2d' );
+
+    this.context.drawImage( this.image, 0, 0 );    
+    const pixels = this.context.getImageData( 0, 0, 640, 480 );            
+
+    const kernel = ( 3 + 1 ) << 1;          
+
+    let image = new jsfeat.matrix_t( pixels.width, pixels.height, jsfeat.U8_t | jsfeat.C1_t );
+    jsfeat.imgproc.grayscale( pixels.data, pixels.width, pixels.height, image, jsfeat.COLOR_RGBA2GRAY );  
+    jsfeat.imgproc.gaussian_blur( image, image, kernel, 0 );        
+    jsfeat.imgproc.canny( image, image, 20, 40 );
+    let lines = probabilisticHoughTransform( 
+      pixels.data, 
+      pixels.width, 
+      pixels.height, 
+      1, 
+      Math.PI / 90, 
+      65, 
+      95, 
+      50, 
+      100 
+    );
+
+    console.log( lines );
+
+    this.context.strokeStyle = 'red';
+    this.context.lineWidth = 3;
+
+    for( var s = 0; s < lines.length; s++ ) {
+      this.context.beginPath();
+      this.context.moveTo(
+        lines[s][0].x,
+        lines[s][0].y
+      );
+      this.context.lineTo(
+        lines[s][1].x,
+        lines[s][1].y        
+      )
+      this.context.stroke();
+    }
+  }
+}
+
+const app = new Hough();
+</script>
+
+</body>
+</html>
